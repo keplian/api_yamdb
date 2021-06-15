@@ -7,9 +7,9 @@ from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.response import Response
 
 from .filters import TitleFilter
-from .models import Review, Title
+from .models import Review, Title, Comment
 from .permissions import IsAuthorOrReadOnly
-from .serializers import ReviewSerializer, TitleSerializer
+from .serializers import ReviewSerializer, TitleSerializer, CommentSerializer
 
 
 class ReviewModelViewSet(viewsets.ModelViewSet):
@@ -25,6 +25,21 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Review.objects.filter(title_id=self.kwargs['title_id'])
+
+
+class CommentModelViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthorOrReadOnly,
+                          permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        get_object_or_404(Review, pk=self.request.data['review_id'])
+        serializer.save(author=self.request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get_queryset(self):
+        return Comment.objects.filter(review_id=self.kwargs['review_id'])
 
 
 class TitleModelViewSet(viewsets.ModelViewSet):

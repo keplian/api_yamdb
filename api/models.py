@@ -111,3 +111,39 @@ class Review(models.Model):
         ordering = ('-pub_date',)
         verbose_name = 'review'
         verbose_name_plural = 'отзывы'
+
+
+class Comment(models.Model):
+    """Комментарий к отзыву."""
+    text = models.TextField()
+    pub_date = models.DateTimeField(
+        'Дата публикации', auto_now_add=True
+    )
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments'
+    )
+    title_id = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='произвидение',
+        help_text='Произведение интелектуальное.',
+        related_name='title')
+    review_id = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        verbose_name='отзыв',
+        help_text='Отзыв на котоорый сделан комментарий.',
+        related_name='review')
+
+    class Meta:
+        # db_table = 'titles_title'
+        ordering = ('-pub_date',)
+        verbose_name = 'comment'
+        verbose_name_plural = 'комментарии'
+    # class Meta:
+    #     constraints = [
+    #         models.UniqueConstraint(
+    #             fields=['title_id', 'review_id'],
+    #             name='unique user_following',
+    #         )
+    #     ]

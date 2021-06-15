@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Review, User, Title, Genre, Category
+from .models import Review, User, Title, Genre, Category, Comment
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -40,24 +40,18 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('id', 'title_id', 'text', 'author', 'score', 'pub_date')
         model = Review
 
-#
-# class GroupSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         fields = ('id', 'title', 'slug', 'description')
-#         model = Group
-#
-#
-# class CommentSerializer(serializers.ModelSerializer):
-#     author = serializers.SerializerMethodField()
-#
-#     def get_author(self, obj):
-#         return obj.author.username
-#
-#     class Meta:
-#         fields = ('id', 'author', 'post', 'text', 'created')
-#         model = Comment
-#
-#
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+
+    def get_author(self, obj):
+        return obj.author.username
+
+    class Meta:
+        fields = ('id', 'review_id', 'title_id', 'author', 'text', 'pub_date')
+        model = Comment
+
+
 # class FollowSerializer(serializers.ModelSerializer):
 #     user = serializers.SlugRelatedField(
 #         read_only=True,
