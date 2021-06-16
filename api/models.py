@@ -150,6 +150,7 @@ class Comment(models.Model):
     #         )
     #     ]
 
+
 class User(models.Model):
     username_validator = UnicodeUsernameValidator()
     username = models.CharField(
