@@ -5,6 +5,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.exceptions import NotFound, ParseError
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
+
 
 from .filters import TitleFilter
 from .models import Review, Title, Comment
@@ -17,11 +19,12 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthorOrReadOnly,
                           permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = PageNumberPagination
 
     def perform_create(self, serializer):
-        get_object_or_404(Title, pk=self.request.data['title_id'])
-        serializer.save(author=self.request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            get_object_or_404(Title, pk=self.request.data['title_id'])
+            serializer.save(author=self.request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         return Review.objects.filter(title_id=self.kwargs['title_id'])
