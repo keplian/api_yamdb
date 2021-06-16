@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import Title, Genre, Category, Review, Comment
+from api.models import Title, Genre, Category, Review, Comment, User
 
 
 @admin.register(Title)
@@ -37,3 +37,18 @@ class CommentAdmin(admin.ModelAdmin):
     list_display = ('pk', 'id', 'pub_date', 'text')
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = (
+        "username",
+        "email",
+        "role",
+        "description",
+        "first_name",
+        "last_name",
+    )
+    search_fields = ("username", "email")
+    empty_value_display = "-пусто-"
+
