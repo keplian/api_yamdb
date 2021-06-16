@@ -37,7 +37,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('id', 'title_id', 'text', 'author', 'score', 'pub_date')
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
 
 
@@ -50,18 +50,3 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'review_id', 'title_id', 'author', 'text', 'pub_date')
         model = Comment
-
-
-# class FollowSerializer(serializers.ModelSerializer):
-#     user = serializers.SlugRelatedField(
-#         read_only=True,
-#         slug_field='username'
-#     )
-#     following = serializers.SlugRelatedField(
-#         read_only=True,
-#         slug_field='username'
-#     )
-#
-#     class Meta:
-#         fields = ('user', 'following')
-#         model = Follow

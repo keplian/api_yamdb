@@ -89,28 +89,26 @@ class Review(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews'
     )
-    title_id = models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name='reviews'
-    )
+    # title_id = models.ForeignKey(
+    #     Title, on_delete=models.CASCADE, related_name='reviews'
+    # )
     score = models.SmallIntegerField(10)
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True
     )
-
-    # group = models.ForeignKey(
-    #     'Group',
-    #     models.SET_NULL,
-    #     blank=True,
-    #     null=True,
-    #     verbose_name='группа',
-    #     help_text='Группа сообщений.',
-    #     related_name='group_posts')
 
     class Meta:
         db_table = 'reviews_review'
         ordering = ('-pub_date',)
         verbose_name = 'review'
         verbose_name_plural = 'отзывы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author'],
+                # fields=['title_id', 'author'],
+                name='unique user_following',
+            )
+        ]
 
 
 class Comment(models.Model):
@@ -136,14 +134,7 @@ class Comment(models.Model):
         related_name='review')
 
     class Meta:
-        # db_table = 'titles_title'
         ordering = ('-pub_date',)
         verbose_name = 'comment'
         verbose_name_plural = 'комментарии'
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['title_id', 'review_id'],
-    #             name='unique user_following',
-    #         )
-    #     ]
+
