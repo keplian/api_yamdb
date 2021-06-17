@@ -21,15 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username')
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    genre = GenreSerializer(many=False)
-    category = CategorySerializer(many=False)
-
-    class Meta:
-        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
-        model = Title
-
-
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True,
@@ -50,3 +41,19 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'review_id', 'title_id', 'author', 'text', 'pub_date')
         model = Comment
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    rating = serializers.SerializerMethodField()
+    genre = GenreSerializer()
+    category = CategorySerializer()
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'rating', 'description', 'genre',
+                  'category')
+        model = Title
+
+    def get_rating(self, obj):
+        rating = Review.objects.get(title_id=obj.id).score
+        return rating
+
