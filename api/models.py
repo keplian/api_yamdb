@@ -118,7 +118,8 @@ class User(models.Model):
     last_name = models.CharField(_('last name'), max_length=150, blank=True)
 
     def __str__(self):
-        return f'{self.username}, has a {self.role} role'
+        return self.username
+        # return f'{self.username}, has a {self.role} role'
 
     class Meta:
         verbose_name = 'User'

@@ -3,6 +3,13 @@ from rest_framework import serializers
 from .models import Category, Comment, Genre, Review, Title, User
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('id', 'first_name', 'last_name', 'username', 'bio', 'email',
+                  'role')
+        model = User
+
+
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
