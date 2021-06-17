@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import Title, Genre, Category, Review, Comment, User
+from api.models import Category, Comment, Genre, Review, Title, User
 
 
 @admin.register(Title)
@@ -42,13 +42,12 @@ class CommentAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = (
-        "username",
-        "email",
-        "role",
-        "description",
-        "first_name",
-        "last_name",
+        'username',
+        'email',
+        'role',
+        'description',
+        'first_name',
+        'last_name',
     )
-    search_fields = ("username", "email")
-    empty_value_display = "-пусто-"
-
+    search_fields = ('username', 'email')
+    empty_value_display = '-пусто-'

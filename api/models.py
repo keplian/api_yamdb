@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 #     name = models.CharField(
 #         'название жанра',
 #         max_length=200,
-#         help_text='Придумайте краткое и ёмкое название для жанра произведений')
+#         help_text='Придумайте краткое название для жанра произведений')
 #     slug = models.SlugField(
 #         # unique=True,
 #         blank=True,
@@ -30,7 +30,7 @@ from django.utils.translation import gettext_lazy as _
 #     name = models.CharField(
 #         'название категории',
 #         max_length=200,
-#         help_text='Придумайте краткое и ёмкое название категории произведений')
+#         help_text='Придумайте краткое название категории произведений')
 #     slug = models.SlugField(
 #         # unique=True,
 #         blank=True,
@@ -99,10 +99,10 @@ class User(models.Model):
     """
 
     ROLE_CHOICES = [
-        ("anon", "Anonymous"),
-        ("user", "user"),
-        ("moder", "moderator"),
-        ("admin", "admin"),
+        ('anon', 'Anonymous'),
+        ('user', 'user'),
+        ('moder', 'moderator'),
+        ('admin', 'admin'),
     ]
 
     username_validator = UnicodeUsernameValidator()
@@ -110,57 +110,57 @@ class User(models.Model):
         max_length=30, unique=True, validators=[username_validator]
     )
     email = models.EmailField(
-        _("email address"),
+        _('email address'),
     )
     role = models.CharField(max_length=30, choices=ROLE_CHOICES)
     description = models.CharField(max_length=150, blank=True)
-    first_name = models.CharField(_("first name"), max_length=30, blank=True)
-    last_name = models.CharField(_("last name"), max_length=150, blank=True)
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=150, blank=True)
 
     def __str__(self):
-        return f"{self.username}, has a {self.role} role"
+        return f'{self.username}, has a {self.role} role'
 
     class Meta:
-        verbose_name = "User"
+        verbose_name = 'User'
 
 
 class Title(models.Model):
     """Название произведения."""
     name = models.TextField(
-        "Название произведения",
+        'Название произведения',
         max_length=200,
-        help_text="Введите название произведения",
+        help_text='Введите название произведения',
     )
     year = models.DecimalField(
-        "Год выпуска", max_digits=4, decimal_places=0, help_text="Год выпуска"
+        'Год выпуска', max_digits=4, decimal_places=0, help_text='Год выпуска'
     )
     description = models.TextField(
-        "Описание", help_text="Введите описание вашего произведения."
+        'Описание', help_text='Введите описание вашего произведения.'
     )
     category = models.ForeignKey(
-        "Category",
+        'Category',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Категория",
-        related_name="Category",
+        verbose_name='Категория',
+        related_name='Category',
     )
     genre = models.ForeignKey(
-        "Genre",
+        'Genre',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name="Жанр",
-        related_name="Genre",
+        verbose_name='Жанр',
+        related_name='Genre',
     )
 
     def __str__(self) -> str:
         return self.name
 
     class Meta:
-        ordering = ("category",)
-        verbose_name = "Произведение"
-        verbose_name_plural = "Произведения"
+        ordering = ('category',)
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
 
 
 class Category(models.Model):
@@ -186,16 +186,16 @@ class Category(models.Model):
 class Genre(models.Model):
     """Название жанра."""
     name = models.TextField(
-        "Название жанра", max_length=200, help_text="Введите название жанра"
+        'Название жанра', max_length=200, help_text='Введите название жанра'
     )
-    slug = models.SlugField("URL", unique=True)
+    slug = models.SlugField('URL', unique=True)
 
     def __str__(self) -> str:
         return self.name
 
     class Meta:
-        verbose_name = "Жанр"
-        verbose_name_plural = "Жанры"
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
 
 
 class Review(models.Model):
@@ -208,19 +208,18 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации', auto_now_add=True
     )
-    slug = models.SlugField("URL", unique=True)
 
     class Meta:
         db_table = 'reviews_review'
         ordering = ('-pub_date',)
         verbose_name = 'review'
         verbose_name_plural = 'отзывы'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['author'],
-                name='unique user_following',
-            )
-        ]
+        # constraints = [
+        #     models.UniqueConstraint(
+        #         fields=['author'],
+        #         name='unique user_following',
+        #     )
+        # ]
 
 
 class Comment(models.Model):
@@ -249,12 +248,3 @@ class Comment(models.Model):
         ordering = ('-pub_date',)
         verbose_name = 'comment'
         verbose_name_plural = 'комментарии'
-
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['title_id', 'review_id'],
-    #             name='unique user_following',
-    #         )
-    #     ]
-

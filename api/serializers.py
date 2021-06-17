@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Review, User, Title, Genre, Category, Comment
+from .models import Category, Comment, Genre, Review, Title, User
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -56,4 +56,3 @@ class TitleSerializer(serializers.ModelSerializer):
     def get_rating(self, obj):
         rating = Review.objects.get(title_id=obj.id).score
         return rating
-

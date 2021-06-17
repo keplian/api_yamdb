@@ -1,14 +1,13 @@
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
-from .paginations import StandardResultsSetPagination
 
 from .filters import TitleFilter
-from .models import Review, Title, Comment
+from .models import Comment, Review, Title
+from .paginations import StandardResultsSetPagination
 from .permissions import IsAuthorOrReadOnly
-from .serializers import ReviewSerializer, TitleSerializer, CommentSerializer
+from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer
 
 
 class TitleModelViewSet(viewsets.ModelViewSet):
