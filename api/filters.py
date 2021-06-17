@@ -1,14 +1,13 @@
-from django_filters import rest_framework as filters
-
+import django_filters
+from django_filters.rest_framework import filters
 from .models import Title
 
 
-class TitleFilter(filters.FilterSet):
-    date_from = filters.DateFilter(field_name='year',
-                                   lookup_expr='gte')
-    date_to = filters.DateFilter(field_name='year',
-                                 lookup_expr='lte')
+class TitleFilter(django_filters.FilterSet):
+    year = filters.NumberFilter(field_name='year', lookup_expr='exact')
+    name = filters.CharFilter(field_name='name', lookup_expr='icontains')
 
     class Meta:
         model = Title
-        fields = ['date_from', 'date_to']
+        fields = ['year', 'name']
+
