@@ -1,0 +1,60 @@
+POST  http://127.0.0.1:8000/api/v1/auth/email/
+content-type: application/json
+
+{"email": "keplian@gmail.com"}
+
+###
+
+GET http://127.0.0.1:8000/api/v1/group/
+content-type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIxOTc1NDYxLCJqdGkiOiI0ZjYzOTQ0N2FkMTE0ZjBjOTkwMmI0MWEzNGZlMjExMyIsInVzZXJfaWQiOjF9.qBNH2OBHuqEXaONM9afaHqRY01Wy_nf5MtgW-Ze8Iok
+
+###
+
+POST http://127.0.0.1:8000/api/v1/token/
+content-type: application/json
+
+{"email": "keplian@gmail.com",
+"confirmation_code": "2BcBtMuuwSXI"}
+
+###
+
+POST  http://127.0.0.1:8000/api/v1/posts/
+content-type: application/json
+Authorization: Bearer "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIzODI1MjY0LCJqdGkiOiI3NjRlMGMwMmViMDU0M2M2YjYxNmY1OTdlNmJiM2FlOCIsInVzZXJfaWQiOjF9.mzoFEsow3wUMLjwxRhYdzurYB0rfnSIAugs_fqDXx8k".eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIxOTc1NDYxLCJqdGkiOiI0ZjYzOTQ0N2FkMTE0ZjBjOTkwMmI0MWEzNGZlMjExMyIsInVzZXJfaWQiOjF9.qBNH2OBHuqEXaONM9afaHqRY01Wy_nf5MtgW-Ze8Iok
+
+{
+"text": "New Post 1"
+}
+
+###
+
+GET http://127.0.0.1:8000/api/v1/follow/
+content-type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIyODg1NDA2LCJqdGkiOiI5ODhhOTI0NjM5NGE0MTFhYTkzZTU5Mzc2MWVhNTU2NCIsInVzZXJfaWQiOjF9.jApjcirZhD-C3yC_jaEhiIOnpHX--OfeYuM1_BIPdO4
+
+
+
+###
+
+
+POST http://127.0.0.1:8000/api/v1/follow/
+content-type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIyODg1NDA2LCJqdGkiOiI5ODhhOTI0NjM5NGE0MTFhYTkzZTU5Mzc2MWVhNTU2NCIsInVzZXJfaWQiOjF9.jApjcirZhD-C3yC_jaEhiIOnpHX--OfeYuM1_BIPdO4
+
+{}
+
+###
+
+POST  http://127.0.0.1:8000/api/v1/posts/
+content-type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIxOTc1NDYxLCJqdGkiOiI0ZjYzOTQ0N2FkMTE0ZjBjOTkwMmI0MWEzNGZlMjExMyIsInVzZXJfaWQiOjF9.qBNH2OBHuqEXaONM9afaHqRY01Wy_nf5MtgW-Ze8Iok
+
+{
+"text": "New Post 1"
+}
+
+
+"refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYyMzkxMTM2NCwianRpIjoiZGY2Mzc1ZWE4NjBkNDAwODhlOTU2ZTgwMDZhODQxMGUiLCJ1c2VyX2lkIjoxfQ.9irAuSs7RPzT3pHzZ7SewTSTI59nyxRw0CXbnPYNa6A",
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIzODI1MjY0LCJqdGkiOiI3NjRlMGMwMmViMDU0M2M2YjYxNmY1OTdlNmJiM2FlOCIsInVzZXJfaWQiOjF9.mzoFEsow3wUMLjwxRhYdzurYB0rfnSIAugs_fqDXx8k"
+}
