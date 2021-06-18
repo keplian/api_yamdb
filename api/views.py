@@ -3,20 +3,24 @@ from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
-from rest_framework.exceptions import ParseError
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
 from .filters import TitleFilter
 from .models import Comment, Review, Title, User
 from .paginations import StandardResultsSetPagination
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (CommentSerializer, ReviewSerializer,
-                          TitleSerializer, UserSerializer)
+from .serializers import (
+    CommentSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    UserSerializer,
+)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = StandardResultsSetPagination
 
@@ -31,8 +35,9 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         user = User.objects.filter(username=self.request.user)
         if not user.exists():
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
 
         serializer.save(author=self.request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -53,14 +58,14 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
-        get_object_or_404(Title, pk=self.request.data['title_id'])
+        get_object_or_404(Title, pk=self.request.data["title_id"])
 
-        user = User.objects.get(username='bob')
+        user = User.objects.get(username="bob")
         print(user.__dict__)
 
         if user is None:
-            print(f'UUUUUWEEEE:::::::::::: {user}')
-            raise ParseError('Bad Request')
+            print(f"UUUUUWEEEE:::::::::::: {user}")
+            raise ParseError("Bad Request")
             # return Response(serializer.errors,
             #                 status=status.HTTP_400_BAD_REQUEST)
 

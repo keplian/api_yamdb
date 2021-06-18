@@ -22,10 +22,10 @@ router_v1.register(
     vs.CommentModelViewSet,
     basename="comment",
 )
+router_v1.register("users", vs.UserModelViewSet, basename="users")
 
 urlpatterns = [
     re_path(r"^v1/", include(router_v1.urls)),
-
     path("v1/auth/email/", email_auth, name="email_auth"),
     path(
         "v1/auth/token/",
