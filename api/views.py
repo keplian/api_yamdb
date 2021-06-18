@@ -41,7 +41,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
         )
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TitleModelViewSet(viewsets.ModelViewSet):
