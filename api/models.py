@@ -132,10 +132,17 @@ class Title(models.Model):
         help_text='Введите название произведения',
     )
     year = models.DecimalField(
-        'Год выпуска', max_digits=4, decimal_places=0, help_text='Год выпуска'
+        'Год выпуска',
+        max_digits=4,
+        decimal_places=0,
+        null=True,
+        blank=True,
+        help_text='Год выпуска'
     )
     description = models.TextField(
-        'Описание', help_text='Введите описание вашего произведения.'
+        'Описание',
+        blank=True,
+        help_text='Введите описание вашего произведения.'
     )
     category = models.ForeignKey(
         'Category',
@@ -168,6 +175,7 @@ class Category(models.Model):
     name = models.CharField(
         'Категория произведения',
         max_length=200,
+        unique=True,
         help_text='Введите категорию произведения.'
     )
     slug = models.SlugField(
