@@ -7,8 +7,8 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
     role = models.CharField(max_length=30)
-    description = models.CharField(max_length=150, blank=True)
-    confirmation_code = models.CharField(max_length=100, blank=True, null=True)
+    bio = models.TextField(blank=True)
+    confirmation_code = models.CharField(max_length=100, blank=True)
 
 
 class Title(models.Model):
@@ -108,7 +108,7 @@ class Review(models.Model):
     pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
     class Meta:
-        db_table = "reviews_review"
+        # db_table = "reviews_review"
         ordering = ("-pub_date",)
         verbose_name = "review"
         verbose_name_plural = "отзывы"
