@@ -13,7 +13,6 @@ router_v1 = routers.DefaultRouter()
 # router_v1.register(r'titles/(?P<id>[0-9]+)/reviews',
 #                    vs.ReviewModelViewSet, basename='review')
 # =======
-router_v1.register(r"auth/email", vs.email_auth, basename="email_auth")
 router_v1.register(r"titles", vs.TitleModelViewSet, basename="title")
 router_v1.register(
     r"titles/(?P<id>[0-9]+)/reviews", vs.ReviewModelViewSet, basename="review"
@@ -29,7 +28,7 @@ urlpatterns = [
 
     path("v1/auth/email/", email_auth, name="email_auth"),
     path(
-        "v1/token/",
+        "v1/auth/token/",
         MyTokenObtainPairView.as_view(),
         name="token_obtain_pair",
     ),

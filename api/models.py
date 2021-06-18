@@ -89,7 +89,9 @@ class User(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
     role = models.CharField(max_length=30)
     description = models.CharField(max_length=150, blank=True)
-    confirmation_code = models.CharField(max_length=100)
+    confirmation_code = models.CharField(max_length=100, blank=True, null=True)
+
+
 # <<<<<<< HEAD
 #     first_name = models.CharField(_('first name'), max_length=30, blank=True)
 #     last_name = models.CharField(_('last name'), max_length=150, blank=True)
