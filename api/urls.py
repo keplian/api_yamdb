@@ -1,5 +1,4 @@
 from django.urls import include, path, re_path
-from django.views.generic import TemplateView
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -14,6 +13,7 @@ router_v1 = routers.DefaultRouter()
 # router_v1.register(r'titles/(?P<id>[0-9]+)/reviews',
 #                    vs.ReviewModelViewSet, basename='review')
 # =======
+router_v1.register(r"auth/email", vs.email_auth, basename="email_auth")
 router_v1.register(r"titles", vs.TitleModelViewSet, basename="title")
 router_v1.register(
     r"titles/(?P<id>[0-9]+)/reviews", vs.ReviewModelViewSet, basename="review"
@@ -26,11 +26,7 @@ router_v1.register(
 
 urlpatterns = [
     re_path(r"^v1/", include(router_v1.urls)),
-    path(
-        "redoc/",
-        TemplateView.as_view(template_name="redoc.html"),
-        name="redoc",
-    ),
+
     path("v1/auth/email/", email_auth, name="email_auth"),
     path(
         "v1/token/",
