@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
@@ -23,7 +23,25 @@ class UserModelViewSet(viewsets.ModelViewSet):
     lookup_field = "username"
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # pagination_class = StandardResultsSetPagination
+    pagination_class = StandardResultsSetPagination
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(
+        methods=["PATCH", "GET"],
+        permission_classes=[permissions.IsAuthenticated],
+        detail=False,
+        url_path="me",
+    )
+    def user_me(self, request):
+        if request.method == "GET":
+            serializer = self.get_serializer(request.user)
+            return Response(serializer.data)
+        serializer = self.get_serializer(
+            request.user, data=request.data, partial=True
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class TitleModelViewSet(viewsets.ModelViewSet):

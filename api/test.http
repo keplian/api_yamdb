@@ -5,12 +5,20 @@ content-type: application/json
 
 ###
 
-GET http://127.0.0.1:8000/api/v1/users/keplian
+GET http://127.0.0.1:8000/api/v1/users/me/
 content-type: application/json
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDc2NjE5LCJqdGkiOiJlZDcxODVkYTk4ZTg0ZjFkYWY0NGFhYTg3YjIwNjIxOCIsInVzZXJfaWQiOjF9.vGrrnFfso8wS9EUTpR_tmrOTYbTNeN2wOXNcGqDzn5E
 
 # {"username": "test", "email": "test@gmail.com", "confirmation_code": ""}
 ###
+
+PATCH http://127.0.0.1:8000/api/v1/users/me/
+content-type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDc2NjE5LCJqdGkiOiJlZDcxODVkYTk4ZTg0ZjFkYWY0NGFhYTg3YjIwNjIxOCIsInVzZXJfaWQiOjF9.vGrrnFfso8wS9EUTpR_tmrOTYbTNeN2wOXNcGqDzn5E
+
+{"bio": "test"}
+###
+
 
 POST http://127.0.0.1:8000/api/v1/auth/token/
 content-type: application/json
