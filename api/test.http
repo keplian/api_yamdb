@@ -15,7 +15,7 @@ POST http://127.0.0.1:8000/api/v1/token/
 content-type: application/json
 
 {"email": "keplian@gmail.com",
-"confirmation_code": "2BcBtMuuwSXI"}
+"confirmation_code": "3ej3vOzdliD0"}
 
 ###
 

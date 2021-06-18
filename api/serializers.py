@@ -91,7 +91,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user and confirmation_code:
             data["refresh"] = str(refresh)
             data["access"] = str(refresh.access_token)
-            user.confirmation_code = None
+            user.confirmation_code = ""
             user.save()
         return data
 
