@@ -6,9 +6,17 @@ from .models import Category, Comment, Genre, Review, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    lookup_field = "username"
+
     class Meta:
-        fields = ('id', 'first_name', 'last_name', 'username', 'bio', 'email',
-                  'role')
+        fields = (
+            "first_name",
+            "last_name",
+            "username",
+            "bio",
+            "email",
+            "role",
+        )
         model = User
 
 
@@ -22,12 +30,6 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         fields = ("name", "slug")
         model = Category
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("id", "username")
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -91,7 +93,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user and confirmation_code:
             data["refresh"] = str(refresh)
             data["access"] = str(refresh.access_token)
-            user.confirmation_code = None
+            user.confirmation_code = ""
             user.save()
         return data
 

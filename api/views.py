@@ -20,9 +20,10 @@ from .serializers import (
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
+    lookup_field = "username"
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    pagination_class = StandardResultsSetPagination
+    # pagination_class = StandardResultsSetPagination
 
 
 class TitleModelViewSet(viewsets.ModelViewSet):

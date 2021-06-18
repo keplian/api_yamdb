@@ -5,27 +5,26 @@ content-type: application/json
 
 ###
 
-GET http://127.0.0.1:8000/api/v1/group/
+GET http://127.0.0.1:8000/api/v1/users/keplian
 content-type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIxOTc1NDYxLCJqdGkiOiI0ZjYzOTQ0N2FkMTE0ZjBjOTkwMmI0MWEzNGZlMjExMyIsInVzZXJfaWQiOjF9.qBNH2OBHuqEXaONM9afaHqRY01Wy_nf5MtgW-Ze8Iok
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDc2NjE5LCJqdGkiOiJlZDcxODVkYTk4ZTg0ZjFkYWY0NGFhYTg3YjIwNjIxOCIsInVzZXJfaWQiOjF9.vGrrnFfso8wS9EUTpR_tmrOTYbTNeN2wOXNcGqDzn5E
 
+# {"username": "test", "email": "test@gmail.com", "confirmation_code": ""}
 ###
 
 POST http://127.0.0.1:8000/api/v1/auth/token/
 content-type: application/json
 
 {"email": "keplian@gmail.com",
-"confirmation_code": "l0dNelebIM6h"}
+"confirmation_code": "coAwo7CjvB1W"}
 
 ###
 
-POST  http://127.0.0.1:8000/api/v1/posts/
+POST http://127.0.0.1:8000/api/v1/users/
 content-type: application/json
-Authorization: Bearer "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIzODI1MjY0LCJqdGkiOiI3NjRlMGMwMmViMDU0M2M2YjYxNmY1OTdlNmJiM2FlOCIsInVzZXJfaWQiOjF9.mzoFEsow3wUMLjwxRhYdzurYB0rfnSIAugs_fqDXx8k".eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjIxOTc1NDYxLCJqdGkiOiI0ZjYzOTQ0N2FkMTE0ZjBjOTkwMmI0MWEzNGZlMjExMyIsInVzZXJfaWQiOjF9.qBNH2OBHuqEXaONM9afaHqRY01Wy_nf5MtgW-Ze8Iok
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDc2NjE5LCJqdGkiOiJlZDcxODVkYTk4ZTg0ZjFkYWY0NGFhYTg3YjIwNjIxOCIsInVzZXJfaWQiOjF9.vGrrnFfso8wS9EUTpR_tmrOTYbTNeN2wOXNcGqDzn5E
 
-{
-"text": "New Post 1"
-}
+{"username": "test", "email": "test@gmail.com", "confirmation_code": "", "role":  "user"}
 
 ###
 
