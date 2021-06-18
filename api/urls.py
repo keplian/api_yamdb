@@ -7,13 +7,12 @@ from .serializers import MyTokenObtainPairView
 from .views import email_auth
 
 router_v1 = routers.DefaultRouter()
-# <<<<<<< HEAD
-# router_v1.register(r'auth/email', vs.UserModelViewSet, basename='auth')
-# router_v1.register(r'titles', vs.TitleModelViewSet, basename='title')
-# router_v1.register(r'titles/(?P<id>[0-9]+)/reviews',
-#                    vs.ReviewModelViewSet, basename='review')
-# =======
-router_v1.register(r"titles", vs.TitleModelViewSet, basename="title")
+
+router_v1.register(r'categories', vs.CategoryModelViewSet, basename='category')
+router_v1.register(r'titles', vs.TitleModelViewSet, basename='title')
+router_v1.register(r'titles/(?P<id>[0-9]+)/reviews',
+                   vs.ReviewModelViewSet, basename='review')
+
 router_v1.register(
     r"titles/(?P<id>[0-9]+)/reviews", vs.ReviewModelViewSet, basename="review"
 )

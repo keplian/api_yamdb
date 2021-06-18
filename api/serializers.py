@@ -69,7 +69,7 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
 
     def get_rating(self, obj):
-        rating = Review.objects.get(title_id=obj.id).score
+        rating = Review.objects.get(id=obj.id).score
         return rating
 
 

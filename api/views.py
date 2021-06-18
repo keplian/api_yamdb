@@ -2,17 +2,17 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, status, viewsets, filters
 from rest_framework.exceptions import ParseError
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .filters import TitleFilter
-from .models import Comment, Review, Title, User
+from .models import Category, Comment, Review, Title, User
 from .paginations import StandardResultsSetPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CommentSerializer, ReviewSerializer,
-                          TitleSerializer, UserSerializer)
+                          TitleSerializer, UserSerializer, CategorySerializer)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -24,6 +24,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    permission_classes = [IsAuthorOrReadOnly, ]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
@@ -41,6 +42,27 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     #     group_id = self.request.query_params.get('id', None)
     #     if group_id is not None:
     #         return self.queryset.filter(group=group_id)
+
+    # def perform_create(self, serializer):
+    #     serializer.save(
+    #         name=self.request.query_params['name'],
+    #         genre__slug=self.request.query_params['genre'],
+    #         category__slug=self.request.query_params['category'],
+    #     ) НЕ РАБОТАЕТ
+
+
+class CategoryModelViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', ]
+
+    def perform_create(self, serializer):
+        serializer.save(
+            name=self.request.data['name'],
+            slug=self.request.data['slug']
+        )
 
 
 class ReviewModelViewSet(viewsets.ModelViewSet):
