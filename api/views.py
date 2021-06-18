@@ -13,6 +13,7 @@ from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer
 from .serializers import CategorySerializer
 
 
+
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
@@ -32,7 +33,6 @@ class TitleModelViewSet(viewsets.ModelViewSet):
 class CategoryModelViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # permission_classes = [AllowAny, ]
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', ]
@@ -41,7 +41,7 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
         serializer.save(
             name=self.request.data['name'],
             slug=self.request.data['slug']
-        )      
+        )   
 
 
 class ReviewModelViewSet(viewsets.ModelViewSet):
