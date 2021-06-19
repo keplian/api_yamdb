@@ -82,7 +82,10 @@ class Genre(models.Model):
     """Название жанра."""
 
     name = models.TextField(
-        "Название жанра", max_length=200, unique=True, help_text="Введите название жанра"
+        "Название жанра",
+        max_length=200,
+        unique=True,
+        help_text="Введите название жанра"
     )
     slug = models.SlugField("URL", unique=True)
 
