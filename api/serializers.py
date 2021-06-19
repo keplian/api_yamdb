@@ -1,3 +1,4 @@
+from django.http import request
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -42,14 +43,14 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
 
     def validate(self, data):
-        title_id = self.context['view'].kwargs['id']
+        title_id = self.context["view"].kwargs["id"]
         review = Review.objects.filter(
-            title=title_id, author__username=self.context["request"].user)
+            title=title_id, author__username=self.context["request"].user
+        )
         if review.exists():
-            raise serializers.ValidationError('Your review already exists.')
+            raise serializers.ValidationError("Your review already exists.")
 
         return data
-
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -65,8 +66,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
-    # genre = GenreSerializer()
-    # category = CategorySerializer()
+    genre = GenreSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
 
     class Meta:
         fields = (
@@ -78,6 +79,7 @@ class TitleSerializer(serializers.ModelSerializer):
             "genre",
             "category",
         )
+        depth = 1
         model = Title
 
     def get_rating(self, title):

@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.deletion import CASCADE
 from django.utils.translation import gettext_lazy as _
 
 
@@ -20,17 +21,17 @@ class Title(models.Model):
         help_text="Введите название произведения",
     )
     year = models.DecimalField(
-        'Год выпуска',
+        "Год выпуска",
         max_digits=4,
         decimal_places=0,
         null=True,
         blank=True,
-        help_text='Год выпуска'
+        help_text="Год выпуска",
     )
     description = models.TextField(
-        'Описание',
+        "Описание",
         blank=True,
-        help_text='Введите описание вашего произведения.'
+        help_text="Введите описание вашего произведения.",
     )
     category = models.ForeignKey(
         "Category",
@@ -40,10 +41,8 @@ class Title(models.Model):
         verbose_name="Категория",
         related_name="Category",
     )
-    genre = models.ForeignKey(
+    genre = models.ManyToManyField(
         "Genre",
-        on_delete=models.SET_NULL,
-        null=True,
         blank=True,
         verbose_name="Жанр",
         related_name="Genre",
@@ -65,12 +64,9 @@ class Category(models.Model):
         "Категория произведения",
         max_length=200,
         unique=True,
-        help_text='Введите категорию произведения.'
+        help_text="Введите категорию произведения.",
     )
-    slug = models.SlugField(
-        'URL',
-        unique=True
-    )
+    slug = models.SlugField("URL", unique=True)
     slug = models.SlugField("URL", unique=True)
 
     def __str__(self) -> str:

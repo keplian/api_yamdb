@@ -2,6 +2,7 @@ from functools import partial
 
 from api_yamdb.settings import ROLES_PERMISSIONS
 from django.core.mail import send_mail
+from django.http import request
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
@@ -59,6 +60,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
 
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
+    lookup_field = "id"
     serializer_class = TitleSerializer
     permission_classes = [
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
@@ -67,16 +69,6 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
-
-    def perform_create(self, serializer):
-        user = User.objects.filter(username=self.request.user)
-        if not user.exists():
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
-
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
         category_id = self.request.query_params.get("group", None)
