@@ -2,6 +2,7 @@ from functools import partial
 
 from api_yamdb.settings import ROLES_PERMISSIONS
 from django.core.mail import send_mail
+from django.http import request
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
@@ -69,33 +70,61 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
     def perform_create(self, serializer):
-        user = User.objects.filter(username=self.request.user)
-        if not user.exists():
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        genre = get_object_or_404(Genre, slug=self.request.data['genre'])
+        category = get_object_or_404(
+            Category,
+            slug=self.request.data['category']
+        )
+        serializer.save(
+            genre_id=genre.id,
+            category_id=category.id,
+        )
+
+    def perform_update(self, serializer):
+
+        if 'genre' in self.request.data:
+            genre = get_object_or_404(Genre, slug=self.request.data['genre'])
+        else:
+            slug = self.serializer.data['genre']['slug']
+            genre = get_object_or_404(Genre, slug=slug)
+        if 'category' in self.request.data:
+            category = get_object_or_404(
+                Category,
+                slug=self.request.data['category']
             )
+        else:
+       
+            slug = serializer.validated_data['category']['slug']
+            category = get_object_or_404(Category, slug=slug)
 
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer.save(
+            genre_id=genre.id,
+            category_id=category.id,
+        )
 
-    def get_queryset(self):
-        category_id = self.request.query_params.get("group", None)
-        if category_id is not None:
-            #  через ORM отфильтровать объекты модели User
-            #  по значению параметра username, полученнго в запросе
-            return self.queryset.filter(category=category_id)
-
-    # def get_queryset(self):
-    #     group_id = self.request.query_params.get('id', None)
-    #     if group_id is not None:
-    #         return self.queryset.filter(group=group_id)
-
-    # def perform_create(self, serializer):
-    #     serializer.save(
-    #         name=self.request.query_params['name'],
-    #         genre__slug=self.request.query_params['genre'],
-    #         category__slug=self.request.query_params['category'],
-    #     ) НЕ РАБОТАЕТ
+# <<<<<<< HEAD
+#     def get_queryset(self):
+#         category_id = self.request.query_params.get("group", None)
+#         if category_id is not None:
+#             #  через ORM отфильтровать объекты модели User
+#             #  по значению параметра username, полученнго в запросе
+#             return self.queryset.filter(category=category_id)
+#
+#     # def get_queryset(self):
+#     #     group_id = self.request.query_params.get('id', None)
+#     #     if group_id is not None:
+#     #         return self.queryset.filter(group=group_id)
+#
+#     # def perform_create(self, serializer):
+#     #     serializer.save(
+#     #         name=self.request.query_params['name'],
+#     #         genre__slug=self.request.query_params['genre'],
+#     #         category__slug=self.request.query_params['category'],
+#     #     ) НЕ РАБОТАЕТ
+# =======
+#
+#
+# >>>>>>> 261447e1b5e86dd45959261b9428ea4a159a07ab
 
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
@@ -107,14 +136,17 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
         IsAuthenticatedOrReadOnly,
     ]
     filter_backends = [filters.SearchFilter]
-    search_fields = [
-        "name",
-    ]
+    search_fields = ['name', ]
+    lookup_field = 'slug'
 
     def perform_create(self, serializer):
         serializer.save(
             name=self.request.data["name"], slug=self.request.data["slug"]
         )
+
+    def perform_destroy(self, serializer):
+        serializer = get_object_or_404(Category, slug=self.kwargs.get('slug'))
+        serializer.delete()
 
 
 class GenreModelViewSet(viewsets.ModelViewSet):
@@ -126,14 +158,19 @@ class GenreModelViewSet(viewsets.ModelViewSet):
     ]
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
-    search_fields = [
-        "name",
-    ]
+
+    search_fields = ['name', ]
+    # lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
 
     def perform_create(self, serializer):
         serializer.save(
             name=self.request.data["name"], slug=self.request.data["slug"]
         )
+
+    def perform_destroy(self, serializer):
+        serializer = get_object_or_404(Genre, slug=self.kwargs.get('slug'))
+        serializer.delete()
 
 
 class ReviewModelViewSet(viewsets.ModelViewSet):

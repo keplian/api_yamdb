@@ -23,13 +23,10 @@ class Title(models.Model):
         'Год выпуска',
         max_digits=4,
         decimal_places=0,
-        null=True,
-        blank=True,
         help_text='Год выпуска'
     )
     description = models.TextField(
         'Описание',
-        blank=True,
         help_text='Введите описание вашего произведения.'
     )
     category = models.ForeignKey(
@@ -85,7 +82,10 @@ class Genre(models.Model):
     """Название жанра."""
 
     name = models.TextField(
-        "Название жанра", max_length=200, help_text="Введите название жанра"
+        "Название жанра",
+        max_length=200,
+        unique=True,
+        help_text="Введите название жанра"
     )
     slug = models.SlugField("URL", unique=True)
 
