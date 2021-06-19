@@ -58,12 +58,13 @@ class TitleSerializer(serializers.ModelSerializer):
     # genre = GenreSerializer()
     # category = CategorySerializer()
     # genre = serializers.SlugRelatedField(
-    #     # many=True,
-    #     queryset='genre',
-    #     # read_only=True,
+    #     many=True,
+    #     queryset=Genre.objects.all(),
+    #     read_only=True,
     #     slug_field='name'
     # )
-
+    genre = GenreSerializer(read_only=True)
+    category = CategorySerializer(read_only=True)
     class Meta:
         fields = (
             "id",
@@ -76,8 +77,28 @@ class TitleSerializer(serializers.ModelSerializer):
         )
         model = Title
         read_only_fields = ('genre', 'category', 'rating',)
-        depth = 1
-        
+        # depth = 1
+  
+    # def get_genre(self, obj):
+    #     if Genre.objects.filter(id=obj.id):
+    #         genre = {
+    #             'name': Genre.objects.get(id=obj.id).name,
+    #             'slug': Genre.objects.get(id=obj.id).slug
+    #         }
+    #     else:
+    #         genre = None
+    #     return genre
+
+    # def get_category(self, obj):
+    #     if Category.objects.filter(id=obj.id):
+    #         category = {
+    #             'name': Category.objects.get(id=obj.id).name,
+    #             'slug': Category.objects.get(id=obj.id).slug
+    #         }
+    #     else:
+    #         category = None
+    #     return category
+
     def get_rating(self, obj):
         if Review.objects.filter(id=obj.id):
             rating = Review.objects.get(id=obj.id).score

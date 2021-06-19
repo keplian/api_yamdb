@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.http import request
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
@@ -50,28 +51,6 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
-    # def create(self, request):
-    #     genre = Genre.objects.get(slug=self.request.data['genre']),
-    #     data = {
-    #         'name': self.request.data['name'],
-    #         'year': self.request.data['year'],
-    #         'description': self.request.data['description'],
-    #         'Genre': genre,
-    #         'category': (get_object_or_404(
-    #             Category,
-    #             slug=self.request.data['category']
-    #     )).id
-    #     }
-        
-    #     serializer = self.serializer_class(
-    #         data=data
-    #     )
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
     def perform_create(self, serializer):
         genre = get_object_or_404(Genre, slug=self.request.data['genre'])
         category = get_object_or_404(
@@ -82,6 +61,31 @@ class TitleModelViewSet(viewsets.ModelViewSet):
             genre_id=genre.id,
             category_id=category.id,
         )
+
+    def perform_update(self, serializer):
+
+        if 'genre' in self.request.data:
+            genre = get_object_or_404(Genre, slug=self.request.data['genre'])
+        else:
+            slug = self.serializer.data['genre']['slug']
+            genre = get_object_or_404(Genre, slug=slug)
+        if 'category' in self.request.data:
+            category = get_object_or_404(
+                Category,
+                slug=self.request.data['category']
+            )
+        else:
+       
+            slug = serializer.validated_data['category']['slug']
+            category = get_object_or_404(Category, slug=slug)
+
+        serializer.save(
+            genre_id=genre.id,
+            category_id=category.id,
+        )
+
+        
+    
 
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
