@@ -9,11 +9,12 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .filters import TitleFilter
-from .models import Category, Comment, Review, Title, User
+from .models import Category, Comment, Review, Title, User, Genre
 from .paginations import StandardResultsSetPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CategorySerializer, CommentSerializer,
-                          ReviewSerializer, TitleSerializer, UserSerializer)
+                          ReviewSerializer, TitleSerializer, UserSerializer,
+                          GenreSerializer)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -81,6 +82,20 @@ class TitleModelViewSet(viewsets.ModelViewSet):
 class CategoryModelViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', ]
+
+    def perform_create(self, serializer):
+        serializer.save(
+            name=self.request.data['name'],
+            slug=self.request.data['slug']
+        )
+
+
+class GenreModelViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', ]
