@@ -2,11 +2,10 @@
 
 import django.contrib.auth.models
 import django.contrib.auth.validators
+import django.db.models.deletion
 import django.utils.timezone
 from django.conf import settings
 from django.db import migrations, models
-import django.db.models.deletion
-import django.utils.timezone
 
 
 class Migration(migrations.Migration):
@@ -92,35 +91,5 @@ class Migration(migrations.Migration):
                 'ordering': ('category',),
             },
         ),
-        migrations.CreateModel(
-            name='Review',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.TextField()),
-                ('score', models.SmallIntegerField(verbose_name=10)),
-                ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reviews', to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'verbose_name': 'review',
-                'verbose_name_plural': 'отзывы',
-                'ordering': ('-pub_date',),
-            },
-        ),
-        migrations.CreateModel(
-            name='Comment',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.TextField()),
-                ('pub_date', models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='comments', to=settings.AUTH_USER_MODEL)),
-                ('review_id', models.ForeignKey(help_text='Отзыв на котоорый сделан комментарий.', on_delete=django.db.models.deletion.CASCADE, related_name='review', to='api.Review', verbose_name='отзыв')),
-                ('title_id', models.ForeignKey(help_text='Произведение интелектуальное.', on_delete=django.db.models.deletion.CASCADE, related_name='title', to='api.Title', verbose_name='произвидение')),
-            ],
-            options={
-                'verbose_name': 'comment',
-                'verbose_name_plural': 'комментарии',
-                'ordering': ('-pub_date',),
-            },
-        ),
+
     ]

@@ -2,17 +2,18 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, status, viewsets, filters
+from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
+from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from .filters import TitleFilter
 from .models import Category, Comment, Review, Title, User
 from .paginations import StandardResultsSetPagination
 from .permissions import IsAuthorOrReadOnly
-from .serializers import (CommentSerializer, ReviewSerializer, TitleSerializer,
-                          UserSerializer, CategorySerializer)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          ReviewSerializer, TitleSerializer, UserSerializer)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -43,7 +44,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = [IsAuthorOrReadOnly, ]
+    permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
@@ -55,9 +56,15 @@ class TitleModelViewSet(viewsets.ModelViewSet):
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
-        serializer.save(author=self.request.user)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def get_queryset(self):
+        category_id = self.request.query_params.get('group', None)
+        if category_id is not None:
+            #  через ORM отфильтровать объекты модели User
+            #  по значению параметра username, полученнго в запросе
+            return self.queryset.filter(category=category_id)
     # def get_queryset(self):
     #     group_id = self.request.query_params.get('id', None)
     #     if group_id is not None:
@@ -95,24 +102,16 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
-        get_object_or_404(Title, pk=self.request.data["title_id"])
-
-        user = User.objects.get(username="bob")
-        print(user.__dict__)
-
+        title = get_object_or_404(Title, pk=self.request.data["title_id"])
+        user = User.objects.get(username=self.request.user)
         if user is None:
-            print(f"UUUUUWEEEE:::::::::::: {user}")
             raise ParseError("Bad Request")
-            # return Response(serializer.errors,
-            #                 status=status.HTTP_400_BAD_REQUEST)
 
-        # serializer.save(author=self.request.user)
-
-        serializer.save(author=user)
+        serializer.save(author=user, title=title)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
-        return Review.objects.filter(id=self.kwargs["id"])
+        return Review.objects.filter(title_id=self.kwargs["id"])
 
 
 class CommentModelViewSet(viewsets.ModelViewSet):
@@ -125,9 +124,10 @@ class CommentModelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
-        get_object_or_404(Review, pk=self.request.data["review_id"])
-        serializer.save(author=self.request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        review =get_object_or_404(Review, pk=self.request.data["review_id"])
+        title =get_object_or_404(Title, pk=self.request.data["title_id"])
+        serializer.save(author=self.request.user, review=review, title=title)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_queryset(self):
         return Comment.objects.filter(review_id=self.kwargs["review_id"])

@@ -49,14 +49,14 @@ class CommentSerializer(serializers.ModelSerializer):
         return obj.author.username
 
     class Meta:
-        fields = ("id", "review_id", "title_id", "author", "text", "pub_date")
+        fields = ("id", "author", "text", "pub_date")
         model = Comment
 
 
 class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
-    genre = GenreSerializer()
-    category = CategorySerializer()
+    # genre = GenreSerializer()
+    # category = CategorySerializer()
 
     class Meta:
         fields = (
@@ -70,8 +70,9 @@ class TitleSerializer(serializers.ModelSerializer):
         )
         model = Title
 
-    def get_rating(self, obj):
-        rating = Review.objects.get(id=obj.id).score
+    def get_rating(self, title):
+        rating = 10
+        # rating = Review.objects.filter(title__score=title.id).coun()
         return rating
 
 
