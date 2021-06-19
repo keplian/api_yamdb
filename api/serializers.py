@@ -6,9 +6,17 @@ from .models import Category, Comment, Genre, Review, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    lookup_field = "username"
+
     class Meta:
-        fields = ('id', 'first_name', 'last_name', 'username', 'bio', 'email',
-                  'role')
+        fields = (
+            "first_name",
+            "last_name",
+            "username",
+            "bio",
+            "email",
+            "role",
+        )
         model = User
 
 
@@ -22,12 +30,6 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         fields = ("name", "slug")
         model = Category
-
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("id", "username")
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -47,7 +49,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return obj.author.username
 
     class Meta:
-        fields = ("id", "review_id", "title_id", "author", "text", "pub_date")
+        fields = ("id", "author", "text", "pub_date")
         model = Comment
 
 
@@ -55,10 +57,13 @@ class TitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     # genre = GenreSerializer()
     # category = CategorySerializer()
+<<<<<<< HEAD
     genre = serializers.SlugRelatedField(
         slug_field='name',
         read_only=True
     )
+=======
+>>>>>>> 80a9ef9ea70f1e3b2259f7a49703dad7ebf9d412
 
     class Meta:
         fields = (
@@ -73,11 +78,17 @@ class TitleSerializer(serializers.ModelSerializer):
         model = Title
         read_only_fields = ('genre', 'category', 'rating',)
 
+<<<<<<< HEAD
     def get_rating(self, obj):
         if Review.objects.filter(id=obj.id):
             rating = Review.objects.get(id=obj.id).score
         else:
             rating = None
+=======
+    def get_rating(self, title):
+        rating = 10
+        # rating = Review.objects.filter(title__score=title.id).coun()
+>>>>>>> 80a9ef9ea70f1e3b2259f7a49703dad7ebf9d412
         return rating
 
 
@@ -99,7 +110,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         if user and confirmation_code:
             data["refresh"] = str(refresh)
             data["access"] = str(refresh.access_token)
-            user.confirmation_code = None
+            user.confirmation_code = ""
             user.save()
         return data
 

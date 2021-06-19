@@ -27,14 +27,14 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'id', 'pub_date', 'text', 'score', 'author')
+    list_display = ('pk', 'id', 'author', 'pub_date', 'text', 'score')
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'id', 'pub_date', 'text')
+    list_display = ('pk', 'author', 'title', 'review', 'pub_date', 'text')
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 
@@ -45,7 +45,7 @@ class UserAdmin(admin.ModelAdmin):
         'username',
         'email',
         'role',
-        'description',
+        'bio',
         'first_name',
         'last_name',
     )
