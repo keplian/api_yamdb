@@ -8,16 +8,25 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
-from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (
+    IsAdminUser,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 
 from .filters import TitleFilter
 from .models import Category, Comment, Genre, Review, Title, User
 from .paginations import StandardResultsSetPagination
-from .permissions import IsAuthorOrReadOnly, PermissonForRolegir
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleSerializer,
-                          UserSerializer)
+from .permissions import IsAuthorOrReadOnly, PermissonForRole
+from .serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    UserSerializer,
+)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -26,7 +35,7 @@ class UserModelViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     pagination_class = StandardResultsSetPagination
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly,
+        permissions.IsAuthenticated,
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Users")),
     ]
 
@@ -51,13 +60,10 @@ class UserModelViewSet(viewsets.ModelViewSet):
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-<<<<<<< HEAD
-    permission_classes = [IsAuthenticatedOrReadOnly]
-=======
     permission_classes = [
-        IsAuthorOrReadOnly,
+        partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
+        IsAuthenticatedOrReadOnly,
     ]
->>>>>>> done permiossnons for user, writed perm class for all models
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
@@ -73,11 +79,12 @@ class TitleModelViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
-        category_id = self.request.query_params.get('group', None)
+        category_id = self.request.query_params.get("group", None)
         if category_id is not None:
             #  через ORM отфильтровать объекты модели User
             #  по значению параметра username, полученнго в запросе
             return self.queryset.filter(category=category_id)
+
     # def get_queryset(self):
     #     group_id = self.request.query_params.get('id', None)
     #     if group_id is not None:
@@ -95,6 +102,10 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = StandardResultsSetPagination
+    permission_classes = [
+        partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
+        IsAuthenticatedOrReadOnly,
+    ]
     filter_backends = [filters.SearchFilter]
     search_fields = [
         "name",
@@ -109,14 +120,19 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
 class GenreModelViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = [
+        partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
+        IsAuthenticatedOrReadOnly,
+    ]
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', ]
+    search_fields = [
+        "name",
+    ]
 
     def perform_create(self, serializer):
         serializer.save(
-            name=self.request.data['name'],
-            slug=self.request.data['slug']
+            name=self.request.data["name"], slug=self.request.data["slug"]
         )
 
 
@@ -152,8 +168,8 @@ class CommentModelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
-        review =get_object_or_404(Review, pk=self.request.data["review_id"])
-        title =get_object_or_404(Title, pk=self.request.data["title_id"])
+        review = get_object_or_404(Review, pk=self.request.data["review_id"])
+        title = get_object_or_404(Title, pk=self.request.data["title_id"])
         serializer.save(author=self.request.user, review=review, title=title)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

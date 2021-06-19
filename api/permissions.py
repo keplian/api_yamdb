@@ -28,4 +28,4 @@ class PermissonForRole(BasePermission):
                 or request.method
                 in self.roles_permissions.get(request.user.role)
             )
-        return False
+        return True

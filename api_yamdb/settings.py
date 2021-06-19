@@ -136,7 +136,7 @@ ROLES_PERMISSIONS = {
     "Categories": {
         "admin": ("GET", "POST", "DELETE"),
         "user": ("GET",),
-        "moderator": ("GET"),
+        "moderator": ("GET",),
     },
     "Genres": {
         "admin": ("GET", "POST", "DELETE"),
@@ -146,6 +146,6 @@ ROLES_PERMISSIONS = {
     "Titles": {
         "admin": ("GET", "POST", "PATCH", "DELETE"),
         "user": ("GET",),
-        "moderator": ("GET"),
+        "moderator": ("GET",),
     },
 }
