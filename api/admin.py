@@ -27,7 +27,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'id', 'pub_date', 'text', 'score')
+    list_display = ('pk', 'id', 'pub_date', 'text', 'score', 'author')
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
 

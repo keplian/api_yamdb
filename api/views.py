@@ -1,17 +1,25 @@
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import permissions, status, viewsets
-from rest_framework import filters
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
 from .filters import TitleFilter
-from .models import Comment, Review, Title
-from .models import Category
+from .models import Category, Comment, Genre, Review, Title, User
 from .paginations import StandardResultsSetPagination
 from .permissions import IsAuthorOrReadOnly
-from .serializers import CommentSerializer, ReviewSerializer, TitleSerializer
-from .serializers import CategorySerializer
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer, TitleSerializer,
+                          UserSerializer)
 
+
+class UserModelViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = UserSerializer
+    pagination_class = StandardResultsSetPagination
 
 
 class TitleModelViewSet(viewsets.ModelViewSet):
@@ -22,13 +30,13 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
-    # def perform_create(self, serializer):
-    #     serializer.save(
-    #         name=self.request.query_params['name'],
-    #         genre__slug=self.request.query_params['genre'],
-    #         category__slug=self.request.query_params['category'],
-    #     ) НЕ РАБОТАЕТ
-
+    def perform_create(self, serializer):
+        genre = get_object_or_404(Genre, slug=self.request.data['genre'])
+        category = get_object_or_404(Category, slug=self.request.data['category'])
+        serializer.save(
+            genre_id=genre.id,
+            category_id=category.id,
+        )
 
 class CategoryModelViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -36,44 +44,86 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', ]
+    lookup_field = 'slug'
 
     def perform_create(self, serializer):
         serializer.save(
             name=self.request.data['name'],
             slug=self.request.data['slug']
-        )   
+        )
+
+    def perform_destroy(self, serializer):
+        serializer = get_object_or_404(Category, slug=self.kwargs.get('slug'))
+        serializer.delete()
+
+
+class GenreModelViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', ]
+    # lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
+
+    def perform_create(self, serializer):
+        serializer.save(
+            name=self.request.data['name'],
+            slug=self.request.data['slug']
+        )
+
+    def perform_destroy(self, serializer):
+        serializer = get_object_or_404(Genre, slug=self.kwargs.get('slug'))
+        serializer.delete()
 
 
 class ReviewModelViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthorOrReadOnly,
-                          permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [
+        IsAuthorOrReadOnly,
+        permissions.IsAuthenticatedOrReadOnly,
+    ]
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
         get_object_or_404(Title, pk=self.request.data['title_id'])
-        serializer.save(author=self.request.user)
+
+        user = User.objects.get(username='bob')
+        print(user.__dict__)
+
+        if user is None:
+            print(f'UUUUUWEEEE:::::::::::: {user}')
+            raise ParseError('Bad Request')
+            # return Response(serializer.errors,
+            #                 status=status.HTTP_400_BAD_REQUEST)
+
+        # serializer.save(author=self.request.user)
+
+        serializer.save(author=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
-        return Review.objects.filter(id=self.kwargs['id'])
+        return Review.objects.filter(id=self.kwargs["id"])
 
 
 class CommentModelViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthorOrReadOnly,
-                          permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [
+        IsAuthorOrReadOnly,
+        permissions.IsAuthenticatedOrReadOnly,
+    ]
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
-        get_object_or_404(Review, pk=self.request.data['review_id'])
+        get_object_or_404(Review, pk=self.request.data["review_id"])
         serializer.save(author=self.request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
-        return Comment.objects.filter(review_id=self.kwargs['review_id'])
+        return Comment.objects.filter(review_id=self.kwargs["review_id"])
+
 
 #
 # class TitleModelViewSet(viewsets.ModelViewSet):
@@ -98,3 +148,18 @@ class CommentModelViewSet(viewsets.ModelViewSet):
 #         group_id = self.request.query_params.get('group', None)
 #         if group_id is not None:
 #             return self.queryset.filter(group=group_id)
+
+
+@api_view(["POST"])
+def email_auth(request):
+    user = get_object_or_404(User, email=request.data["email"])
+    confirmation_code = get_random_string()
+    user.confirmation_code = confirmation_code
+    user.save()
+    send_mail(
+        subject="Confirmation code for token from YAMDB",
+        message=str(confirmation_code),
+        from_email=["admin@gmail.com"],
+        recipient_list=[request.data["email"]],
+    )
+    return Response(data="Email was sent", status=status.HTTP_201_CREATED)
