@@ -116,3 +116,36 @@ EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
 
 AUTH_USER_MODEL = "api.User"
+
+ROLES_PERMISSIONS = {
+    "Users": {
+        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "user": (None,),
+        "moderator": (None,),
+    },
+    "Reviews": {
+        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "user": ("GET", "POST"),
+        "moderator": ("GET", "PATCH", "DELETE", "POST"),
+    },
+    "Comments": {
+        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "user": ("GET", "POST"),
+        "moderator": ("GET", "PATCH", "DELETE", "POST"),
+    },
+    "Categories": {
+        "admin": ("GET", "POST", "DELETE"),
+        "user": ("GET",),
+        "moderator": ("GET"),
+    },
+    "Genres": {
+        "admin": ("GET", "POST", "DELETE"),
+        "user": ("GET",),
+        "moderator": ("GET"),
+    },
+    "Titles": {
+        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "user": ("GET",),
+        "moderator": ("GET"),
+    },
+}
