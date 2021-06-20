@@ -75,8 +75,13 @@ class TitleModelViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         if 'genre' in self.request.data:
+            a = self.request.data['genre']
+            c = [x.strip() for x in a.split(',')]
+            genre = Genre.objects.none()
+            for i in c:
+                genre_a = Genre.objects.filter(slug=i)
+                genre = genre.union(genre_a)
             genre_title = self.get_object().genre.all()
-            genre = Genre.objects.filter(slug=self.request.data['genre'])
             genre = genre_title.union(genre)
         else:
             # slug = self.request.POST['genre']
