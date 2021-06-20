@@ -2,7 +2,7 @@ from functools import partial
 
 from api_yamdb.settings import ROLES_PERMISSIONS
 from django.core.mail import send_mail
-from django.http import request
+from .mixin import CreateListDestroyModelMixinViewSet
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
@@ -137,7 +137,7 @@ class TitleModelViewSet(viewsets.ModelViewSet):
 # >>>>>>> 261447e1b5e86dd45959261b9428ea4a159a07ab
 
 
-class CategoryModelViewSet(viewsets.ModelViewSet):
+class CategoryModelViewSet(CreateListDestroyModelMixinViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = StandardResultsSetPagination
@@ -158,6 +158,10 @@ class CategoryModelViewSet(viewsets.ModelViewSet):
         serializer = get_object_or_404(Category, slug=self.kwargs.get('slug'))
         serializer.delete()
 
+    # def get_queryset(self):
+    #     slug = self.request.query_params.get('slug', None)
+    #     if slug is not None:
+    #         return self.queryset.filter(group=group_id)
 
 class GenreModelViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
