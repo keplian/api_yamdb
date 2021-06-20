@@ -1,10 +1,9 @@
 from rest_framework import serializers
+from django.db.models import Count, Avg, Sum
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Category, Comment, Genre, Review, Title, User
-
-
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -44,12 +43,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
 
     def validate(self, data):
-        title_id = self.context["view"].kwargs["id"]
-        review = Review.objects.filter(
-            title=title_id, author__username=self.context["request"].user
-        )
-        if review.exists():
-            raise serializers.ValidationError("Your review already exists.")
+        title_id = self.context["view"].kwargs["title_id"]
+        if not title_id.isnumeric() or int(title_id) < 1 or (
+                data['score'] > 10 or data['score'] < 1):
+            raise serializers.ValidationError('Bad request')
+
+        # review = Review.objects.filter(
+        #     title=title_id, author=self.context["request"].user.id)
+        #
+        # if review.exists():
+        #     raise serializers.ValidationError("Your review already exists.")
 
         return data
 
@@ -85,8 +88,9 @@ class TitleSerializer(serializers.ModelSerializer):
         read_only_fields = ('rating',)
 
     def get_rating(self, obj):
-        if Review.objects.filter(id=obj.id):
-            rating = Review.objects.get(id=obj.id).score
+        if Review.objects.filter(title=obj.id):
+            rating = int((Review.objects.filter(title=obj.id).aggregate(
+                rating=Avg('score')))['rating'])
         else:
             rating = None
         return rating

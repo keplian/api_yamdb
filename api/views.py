@@ -9,7 +9,7 @@ from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
-from rest_framework.exceptions import ParseError
+from rest_framework.exceptions import ParseError, PermissionDenied
 from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticated,
@@ -174,16 +174,26 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
-        title = get_object_or_404(Title, pk=self.request.data["title_id"])
+        title = get_object_or_404(Title, pk=self.kwargs["title_id"])
         user = User.objects.get(username=self.request.user)
+
         if user is None:
             raise ParseError("Bad Request")
+
+        review = Review.objects.filter(
+            title=self.kwargs["title_id"], author=self.request.user.id)
+
+        if review.exists():
+            raise ParseError(detail='Your review already exists.')
 
         serializer.save(author=user, title=title)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
-        return Review.objects.filter(title_id=self.kwargs["id"])
+        return Review.objects.filter(title_id=self.kwargs["title_id"])
+
+    # def perform_destroy(self, serializer):
+    #     return Response([], status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentModelViewSet(viewsets.ModelViewSet):
@@ -196,8 +206,8 @@ class CommentModelViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
-        review = get_object_or_404(Review, pk=self.request.data["review_id"])
-        title = get_object_or_404(Title, pk=self.request.data["title_id"])
+        review = get_object_or_404(Review, pk=self.kwargs["review_id"])
+        title = get_object_or_404(Title, pk=self.kwargs["title_id"])
         serializer.save(author=self.request.user, review=review, title=title)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
