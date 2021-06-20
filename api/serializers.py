@@ -1,8 +1,10 @@
-from rest_framework import serializers
+from rest_framework import pagination, serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from .models import Category, Comment, Genre, Review, Title, User
+
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -73,7 +75,8 @@ class TitleSerializer(serializers.ModelSerializer):
     #     read_only=True,
     #     slug_field='name'
     # )
-    genre = GenreSerializer(read_only=True)
+    # gen = GenreSerializer(many=True, read_only=True)
+    genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
     class Meta:
         fields = (
@@ -86,9 +89,9 @@ class TitleSerializer(serializers.ModelSerializer):
             "category",
         )
         model = Title
-        read_only_fields = ('genre', 'category', 'rating',)
+        read_only_fields = ('rating',)
         # depth = 1
-  
+        
     # def get_genre(self, obj):
     #     if Genre.objects.filter(id=obj.id):
     #         genre = {
