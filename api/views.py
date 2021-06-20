@@ -1,21 +1,33 @@
+from functools import partial
+
+from api_yamdb.settings import ROLES_PERMISSIONS
 from django.core.mail import send_mail
-from django.http import request
+from .mixin import CreateListDestroyModelMixinViewSet
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, serializers, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
-from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import (
+    IsAdminUser,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 
 from .filters import TitleFilter
-from .models import Category, Comment, Review, Title, User, Genre
+from .models import Category, Comment, Genre, Review, Title, User
 from .paginations import StandardResultsSetPagination
-from .permissions import IsAuthorOrReadOnly
-from .serializers import (CategorySerializer, CommentSerializer,
-                          ReviewSerializer, TitleSerializer, UserSerializer,
-                          GenreSerializer)
+from .permissions import IsAuthorOrReadOnly, PermissonForRole
+from .serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    UserSerializer,
+)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -23,7 +35,10 @@ class UserModelViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = StandardResultsSetPagination
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        partial(PermissonForRole, ROLES_PERMISSIONS.get("Users")),
+    ]
 
     @action(
         methods=["PATCH", "GET"],
@@ -46,7 +61,10 @@ class UserModelViewSet(viewsets.ModelViewSet):
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [
+        partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
+        IsAuthenticatedOrReadOnly,
+    ]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
@@ -99,42 +117,74 @@ class TitleModelViewSet(viewsets.ModelViewSet):
             category_id=category.id,
         )
 
-        
-    
+# <<<<<<< HEAD
+#     def get_queryset(self):
+#         category_id = self.request.query_params.get("group", None)
+#         if category_id is not None:
+#             #  через ORM отфильтровать объекты модели User
+#             #  по значению параметра username, полученнго в запросе
+#             return self.queryset.filter(category=category_id)
+#
+#     # def get_queryset(self):
+#     #     group_id = self.request.query_params.get('id', None)
+#     #     if group_id is not None:
+#     #         return self.queryset.filter(group=group_id)
+#
+#     # def perform_create(self, serializer):
+#     #     serializer.save(
+#     #         name=self.request.query_params['name'],
+#     #         genre__slug=self.request.query_params['genre'],
+#     #         category__slug=self.request.query_params['category'],
+#     #     ) НЕ РАБОТАЕТ
+# =======
+#
+#
+# >>>>>>> 261447e1b5e86dd45959261b9428ea4a159a07ab
 
 
-class CategoryModelViewSet(viewsets.ModelViewSet):
+class CategoryModelViewSet(CreateListDestroyModelMixinViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_class = StandardResultsSetPagination
+    permission_classes = [
+        partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
+        IsAuthenticatedOrReadOnly,
+    ]
     filter_backends = [filters.SearchFilter]
     search_fields = ['name', ]
     lookup_field = 'slug'
 
     def perform_create(self, serializer):
         serializer.save(
-            name=self.request.data['name'],
-            slug=self.request.data['slug']
+            name=self.request.data["name"], slug=self.request.data["slug"]
         )
 
     def perform_destroy(self, serializer):
         serializer = get_object_or_404(Category, slug=self.kwargs.get('slug'))
         serializer.delete()
 
+    # def get_queryset(self):
+    #     slug = self.request.query_params.get('slug', None)
+    #     if slug is not None:
+    #         return self.queryset.filter(group=group_id)
 
 class GenreModelViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = [
+        partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
+        IsAuthenticatedOrReadOnly,
+    ]
     pagination_class = StandardResultsSetPagination
     filter_backends = [filters.SearchFilter]
+
     search_fields = ['name', ]
     # lookup_field = 'slug'
     lookup_url_kwarg = 'slug'
 
     def perform_create(self, serializer):
         serializer.save(
-            name=self.request.data['name'],
-            slug=self.request.data['slug']
+            name=self.request.data["name"], slug=self.request.data["slug"]
         )
 
     def perform_destroy(self, serializer):
