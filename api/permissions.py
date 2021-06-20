@@ -12,9 +12,12 @@ class IsAuthorOrReadOnly(BasePermission):
 
 
 class PermissonForRole(BasePermission):
-    """Object-level permission to only allow owners of an object to edit it.
-    A
-    ssumes the model instance has an `author` attribute.
+    """Custom permissons for all models.
+
+    All availiable methods in SETTINGS.ROLES_PERMISSIONS.
+    Needed permisson for each ViewSet passed by argument of this class like:
+
+    permissons_clases=[ROLES_PERMISSIONS.get("Genres")]
     """
 
     def __init__(self, roles_permissions) -> None:
@@ -22,21 +25,19 @@ class PermissonForRole(BasePermission):
         self.roles_permissions = roles_permissions
 
     def has_permission(self, request, view):
-        if request.user and request.user.is_authenticated:
+        if request.user.is_authenticated:
             return bool(
                 request.user.is_superuser
                 or request.user.is_staff
                 or request.method in self.roles_permissions[request.user.role]
             )
-        else:
-            return bool(request.method in self.roles_permissions["anon"])
+        return bool(request.method in self.roles_permissions["anon"])
 
     def has_object_permission(self, request, view, obj):
-        if request.user and request.user.is_authenticated:
+        if request.user.is_authenticated:
             return bool(
                 request.user.is_superuser
                 or request.user.is_staff
                 or request.method in self.roles_permissions[request.user.role]
             )
-        else:
-            return bool(request.method in self.roles_permissions["anon"])
+        return bool(request.method in self.roles_permissions["anon"])

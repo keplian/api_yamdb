@@ -5,13 +5,25 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
+    """User model with some custom fields."""
+
+    ROLES = [
+        ("admin", "Admin"),
+        ("moderator", "Modererator"),
+        ("user", "User"),
+    ]
     email = models.EmailField(_("email address"), unique=True)
-    role = models.CharField(max_length=30)
-    bio = models.TextField(blank=True)
-    confirmation_code = models.CharField(max_length=100, blank=True)
+    role = models.CharField(_("role"), choices=ROLES, max_length=30)
+    bio = models.TextField(_("biography"), blank=True)
+    confirmation_code = models.CharField(
+        _("confirmation code"), max_length=100, blank=True
+    )
 
     class Meta:
-        ordering = ("email",)
+        ordering = ("username",)
+
+    # def __str__(self) -> str:
+    #     return f"Username: {self.username}, role: {self.role},"
 
 
 class Title(models.Model):

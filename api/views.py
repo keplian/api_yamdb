@@ -26,6 +26,8 @@ from .serializers import (
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
+    """Custim User model with custom action."""
+
     lookup_field = "username"
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -39,7 +41,8 @@ class UserModelViewSet(viewsets.ModelViewSet):
         detail=False,
         url_path="me",
     )
-    def user_me(self, request):
+    def user_me(self, request) -> Response:
+        """Custom url for checking by user his profile and avialiable edit."""
         if request.method == "GET":
             serializer = self.get_serializer(request.user)
             return Response(serializer.data)
@@ -99,7 +102,6 @@ class CategoryModelViewSet(CreateListDestroyModelMixinViewSet):
     serializer_class = CategorySerializer
     permission_classes = [
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
-        IsAuthenticatedOrReadOnly,
     ]
     filter_backends = [filters.SearchFilter]
     search_fields = [
@@ -188,6 +190,7 @@ class CommentModelViewSet(viewsets.ModelViewSet):
 
 @api_view(["POST"])
 def email_auth(request):
+    """Check email and send to it confirmation code for token auth."""
     user = get_object_or_404(User, email=request.data["email"])
     confirmation_code = get_random_string()
     user.confirmation_code = confirmation_code

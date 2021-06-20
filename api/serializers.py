@@ -7,6 +7,8 @@ from .models import Category, Comment, Genre, Review, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Custom serializer for User model."""
+
     lookup_field = "username"
 
     class Meta:
