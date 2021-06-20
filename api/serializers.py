@@ -1,10 +1,8 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from django.db.models import Avg
 from .models import Category, Comment, Genre, Review, Title, User
-
-
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -80,13 +78,14 @@ class TitleSerializer(serializers.ModelSerializer):
             "genre",
             "category",
         )
-        depth = 1
+        # depth = 1
         model = Title
         read_only_fields = ('rating',)
 
     def get_rating(self, obj):
-        if Review.objects.filter(id=obj.id):
-            rating = Review.objects.get(id=obj.id).score
+        if Review.objects.filter(title_id=obj.id):
+            rating = Review.objects.filter(title_id=obj.id).aggregate(
+                rating=Avg('score'))['rating']
         else:
             rating = None
         return rating

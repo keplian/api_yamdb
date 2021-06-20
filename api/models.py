@@ -24,13 +24,6 @@ class Title(models.Model):
         "Год выпуска",
         max_digits=4,
         decimal_places=0,
-# <<<<<<< HEAD
-#         help_text='Год выпуска'
-#     )
-#     description = models.TextField(
-#         'Описание',
-#         help_text='Введите описание вашего произведения.'
-# =======
         null=True,
         blank=True,
         help_text="Год выпуска",

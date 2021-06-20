@@ -1,5 +1,5 @@
 from functools import partial
-
+import re
 from api_yamdb.settings import ROLES_PERMISSIONS
 from django.core.mail import send_mail
 from .mixin import CreateListDestroyModelMixinViewSet
@@ -61,29 +61,29 @@ class UserModelViewSet(viewsets.ModelViewSet):
 
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    lookup_field = "id"
+    # lookup_field = "id"
     serializer_class = TitleSerializer
-    permission_classes = [
-        partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
-        IsAuthenticatedOrReadOnly,
-    ]
+    # permission_classes = [
+    #     partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
+    #     IsAuthenticatedOrReadOnly,
+    # ]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
     def get_queryset(self):
-        category_id = self.request.query_params.get("group", None)
+        category_id = self.request.query_params.get('group', None)
         if category_id is not None:
             return self.queryset.filter(category=category_id)
 
     def perform_create(self, serializer):
         a = self.request.data['genre']
+        # s = eval(a)
         c = [x.strip() for x in a.split(',')]
         genre = Genre.objects.none()
         for i in c:
             genre_a = Genre.objects.filter(slug=i)
             genre = genre.union(genre_a)
-        
         category = get_object_or_404(
             Category,
             slug=self.request.data['category']
