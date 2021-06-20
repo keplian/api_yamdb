@@ -1,25 +1,29 @@
 POST  http://127.0.0.1:8000/api/v1/auth/email/
 content-type: application/json
 
-{"email": "test@gmail.com"}
+{"email": "keplian@gmail.com"}
 
 ###
 
 
+
 GET http://127.0.0.1:8000/api/v1/users/
+
 content-type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDc2NjE5LCJqdGkiOiJlZDcxODVkYTk4ZTg0ZjFkYWY0NGFhYTg3YjIwNjIxOCIsInVzZXJfaWQiOjF9.vGrrnFfso8wS9EUTpR_tmrOTYbTNeN2wOXNcGqDzn5E
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NTIyNDIwLCJqdGkiOiJhMWY2OTU2MzZjODY0M2JiYTY1NTkxYTU0ZmQzOGEzNCIsInVzZXJfaWQiOjF9.2dCt8oogHW9lhAN2iqTA5GIni3s_g_TEYqLi3Zt4SVI
 # Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDkzMzA4LCJqdGkiOiJlYzA2ZDFlNzA4MmQ0NzMyODRhMTBiNjVmMmZmYzRjYiIsInVzZXJfaWQiOjN9.6lAGv4HdQCw8BdO-icDXUagGCjMdK8zGPpfMs4doCKU
 
 # {"username": "test", "email": "test@gmail.com", "confirmation_code": ""}
 ###
 
-POST http://127.0.0.1:8000/api/v1/categories/
+POST http://127.0.0.1:8000/api/v1/titles/
 content-type: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDc2NjE5LCJqdGkiOiJlZDcxODVkYTk4ZTg0ZjFkYWY0NGFhYTg3YjIwNjIxOCIsInVzZXJfaWQiOjF9.vGrrnFfso8wS9EUTpR_tmrOTYbTNeN2wOXNcGqDzn5E
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NTIyNDIwLCJqdGkiOiJhMWY2OTU2MzZjODY0M2JiYTY1NTkxYTU0ZmQzOGEzNCIsInVzZXJfaWQiOjF9.2dCt8oogHW9lhAN2iqTA5GIni3s_g_TEYqLi3Zt4SVI
 # Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjI0NDkyODQ5LCJqdGkiOiI1NjA4MzY3NTM2MzA0OTdkOTkzZTE2ZmJmNjI0NDliNyIsInVzZXJfaWQiOjN9.JdSheAfoz75exXQkn5Ojdhxi2DybSvHmIpWhcI6EBQo
 
+
 {"name": "Music3", "slug": "music3"}
+
 
 ###
 
@@ -27,8 +31,10 @@ POST http://127.0.0.1:8000/api/v1/token/
 content-type: application/json
 
 
+
 {"email": "test@gmail.com",
 "confirmation_code": "SWlPnjk4WuVT"}
+
 
 
 ###
