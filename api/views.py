@@ -141,7 +141,7 @@ class CategoryModelViewSet(CreateListDestroyModelMixinViewSet):
         serializer.delete()
 
 
-class GenreModelViewSet(viewsets.ModelViewSet):
+class GenreModelViewSet(CreateListDestroyModelMixinViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = [
@@ -152,7 +152,7 @@ class GenreModelViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
 
     search_fields = ['name', ]
-    lookup_url_kwarg = 'slug'
+    lookup_field = 'slug'
 
     def perform_create(self, serializer):
         serializer.save(
