@@ -5,7 +5,7 @@ from api.models import Category, Comment, Genre, Review, Title, User
 
 @admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'year', 'description')
+    list_display = ('pk', 'name', 'year', 'description', )
     search_fields = ('text',)
     list_filter = ('year',)
     empty_value_display = '-пусто-'

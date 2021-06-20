@@ -3,7 +3,7 @@ from django.http import request
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, permissions, status, viewsets
+from rest_framework import filters, permissions, serializers, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAdminUser, IsAuthenticatedOrReadOnly
@@ -51,36 +51,46 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
+    # def retrieve(self, request, pk=None):
+    #     title = get_object_or_404(self.queryset, pk=pk)
+    #     serializers = TitleSerializer(title)
+    #     return Response(serializers.data)
+
     def perform_create(self, serializer):
-        genre = get_object_or_404(Genre, slug=self.request.data['genre'])
+        a = self.request.data['genre']
+        c = [x.strip() for x in a.split(',')]
+        genre = Genre.objects.none()
+        for i in c:
+            genre_a = Genre.objects.filter(slug=i)
+            genre = genre.union(genre_a)
+        
         category = get_object_or_404(
             Category,
             slug=self.request.data['category']
         )
         serializer.save(
-            genre_id=genre.id,
+            genre=genre,
             category_id=category.id,
         )
 
     def perform_update(self, serializer):
-
         if 'genre' in self.request.data:
-            genre = get_object_or_404(Genre, slug=self.request.data['genre'])
+            genre_title = self.get_object().genre.all()
+            genre = Genre.objects.filter(slug=self.request.data['genre'])
+            genre = genre_title.union(genre)
         else:
-            slug = self.serializer.data['genre']['slug']
-            genre = get_object_or_404(Genre, slug=slug)
+            # slug = self.request.POST['genre']
+            genre = self.get_object().genre.all()
         if 'category' in self.request.data:
             category = get_object_or_404(
                 Category,
                 slug=self.request.data['category']
             )
         else:
-       
-            slug = serializer.validated_data['category']['slug']
+            slug = self.get_object().category.slug
             category = get_object_or_404(Category, slug=slug)
-
         serializer.save(
-            genre_id=genre.id,
+            genre=genre,
             category_id=category.id,
         )
 

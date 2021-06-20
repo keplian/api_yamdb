@@ -37,11 +37,8 @@ class Title(models.Model):
         verbose_name="Категория",
         related_name="Category",
     )
-    genre = models.ForeignKey(
+    genre = models.ManyToManyField(
         "Genre",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
         verbose_name="Жанр",
         related_name="Genre",
     )
@@ -50,7 +47,7 @@ class Title(models.Model):
         return self.name
 
     class Meta:
-        ordering = ("category",)
+        ordering = ("year",)
         verbose_name = "Произведение"
         verbose_name_plural = "Произведения"
 
