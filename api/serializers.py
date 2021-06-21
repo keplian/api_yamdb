@@ -1,5 +1,5 @@
+from django.db.models import Avg
 from rest_framework import serializers
-from django.db.models import Count, Avg, Sum
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -7,52 +7,46 @@ from .models import Category, Comment, Genre, Review, Title, User
 
 
 class UserSerializer(serializers.ModelSerializer):
-    lookup_field = "username"
+    lookup_field = 'username'
 
     class Meta:
         fields = (
-            "first_name",
-            "last_name",
-            "username",
-            "bio",
-            "email",
-            "role",
+            'first_name',
+            'last_name',
+            'username',
+            'bio',
+            'email',
+            'role',
         )
         model = User
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ("name", "slug")
+        fields = ('name', 'slug')
         model = Genre
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ("name", "slug")
+        fields = ('name', 'slug')
         model = Category
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
+        read_only=True, slug_field='username'
     )
 
     class Meta:
-        fields = ("id", "text", "author", "score", "pub_date")
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
         model = Review
 
     def validate(self, data):
-        title_id = self.context["view"].kwargs["title_id"]
+        title_id = self.context['view'].kwargs['title_id']
         if not title_id.isnumeric() or int(title_id) < 1 or (
                 data['score'] > 10 or data['score'] < 1):
             raise serializers.ValidationError('Bad request')
-
-        # review = Review.objects.filter(
-        #     title=title_id, author=self.context["request"].user.id)
-        #
-        # if review.exists():
-        #     raise serializers.ValidationError("Your review already exists.")
 
         return data
 
@@ -64,7 +58,7 @@ class CommentSerializer(serializers.ModelSerializer):
         return obj.author.username
 
     class Meta:
-        fields = ("id", "author", "text", "pub_date")
+        fields = ('id', 'author', 'text', 'pub_date')
         model = Comment
 
 
@@ -75,22 +69,21 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            "id",
-            "name",
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category",
+            'id',
+            'name',
+            'year',
+            'rating',
+            'description',
+            'genre',
+            'category',
         )
-        depth = 1
         model = Title
         read_only_fields = ('rating',)
 
     def get_rating(self, obj):
-        if Review.objects.filter(title=obj.id):
-            rating = int((Review.objects.filter(title=obj.id).aggregate(
-                rating=Avg('score')))['rating'])
+        if Review.objects.filter(title_id=obj.id):
+            rating = int(Review.objects.filter(title_id=obj.id).aggregate(
+                rating=Avg('score'))['rating'])
         else:
             rating = None
         return rating
@@ -99,22 +92,22 @@ class TitleSerializer(serializers.ModelSerializer):
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        del self.fields["password"]
-        del self.fields["username"]
-        self.fields["confirmation_code"] = serializers.CharField(required=True)
-        self.fields["email"] = serializers.EmailField(required=True)
+        del self.fields['password']
+        del self.fields['username']
+        self.fields['confirmation_code'] = serializers.CharField(required=True)
+        self.fields['email'] = serializers.EmailField(required=True)
 
     def validate(self, attrs):
         data = {}
-        user = User.objects.get(email=attrs["email"])
+        user = User.objects.get(email=attrs['email'])
         confirmation_code = User.objects.get(
-            confirmation_code=attrs["confirmation_code"]
+            confirmation_code=attrs['confirmation_code']
         )
         refresh = self.get_token(user)
         if user and confirmation_code:
-            data["refresh"] = str(refresh)
-            data["access"] = str(refresh.access_token)
-            user.confirmation_code = ""
+            data['refresh'] = str(refresh)
+            data['access'] = str(refresh.access_token)
+            user.confirmation_code = ''
             user.save()
         return data
 
