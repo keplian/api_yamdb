@@ -22,9 +22,6 @@ class User(AbstractUser):
     class Meta:
         ordering = ("username",)
 
-    # def __str__(self) -> str:
-    #     return f"Username: {self.username}, role: {self.role},"
-
 
 class Title(models.Model):
     """Название произведения."""
@@ -124,7 +121,6 @@ class Review(models.Model):
     pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
     class Meta:
-        # db_table = 'reviews_review'
         ordering = ("-pub_date",)
         verbose_name = "review"
         verbose_name_plural = "отзывы"
