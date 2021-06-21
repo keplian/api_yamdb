@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.deletion import CASCADE
 from django.utils.translation import gettext_lazy as _
 
 
@@ -20,10 +19,8 @@ class Title(models.Model):
         max_length=200,
         help_text="Введите название произведения",
     )
-    year = models.DecimalField(
+    year = models.PositiveSmallIntegerField(
         "Год выпуска",
-        max_digits=4,
-        decimal_places=0,
         null=True,
         blank=True,
         help_text="Год выпуска",

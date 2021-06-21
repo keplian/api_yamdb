@@ -1,5 +1,4 @@
 from functools import partial
-import re
 from api_yamdb.settings import ROLES_PERMISSIONS
 from django.core.mail import send_mail
 from .mixin import CreateListDestroyModelMixinViewSet
@@ -72,26 +71,34 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
     def get_queryset(self):
-        category_id = self.request.query_params.get('group', None)
+        category_id = self.request.query_params.get('category', None)
         if category_id is not None:
             return self.queryset.filter(category=category_id)
 
+
     def perform_create(self, serializer):
-        a = self.request.data['genre']
-        # s = eval(a)
-        c = [x.strip() for x in a.split(',')]
-        genre = Genre.objects.none()
-        for i in c:
-            genre_a = Genre.objects.filter(slug=i)
-            genre = genre.union(genre_a)
+        slugs = serializer
+        # slugs = self.request.data['genre']
+        slug_1 = self.request.data['category']
         category = get_object_or_404(
             Category,
-            slug=self.request.data['category']
+            slug=slug_1
         )
-        serializer.save(
-            genre=genre,
-            category_id=category.id,
-        )
+        
+        title = serializer.save(category_id=category.id)
+        slugs = [x.strip() for x in slugs.split(',')]
+        for slug in slugs:
+            genre = get_object_or_404(Genre, slug=slug)
+            title.genre.add(genre)
+        
+        # genre = Genre.objects.none()
+        # for slug in slugs:
+        #     genre_a = Genre.objects.filter(slug=slug)
+        #     genre = genre.union(genre_a)
+        # serializer.save(
+        #     genre=genre,
+        #     category_id=category.id,
+        # )
 
     def perform_update(self, serializer):
         if 'genre' in self.request.data:
