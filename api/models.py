@@ -10,6 +10,9 @@ class User(AbstractUser):
     bio = models.TextField(blank=True)
     confirmation_code = models.CharField(max_length=100, blank=True)
 
+    class Meta:
+        ordering = ('email',)
+
 
 class Title(models.Model):
     'Название произведения.'
