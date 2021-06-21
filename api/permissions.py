@@ -22,10 +22,21 @@ class PermissonForRole(BasePermission):
         self.roles_permissions = roles_permissions
 
     def has_permission(self, request, view):
-        if hasattr(request.user, "role"):
-            return (
+        if request.user and request.user.is_authenticated:
+            return bool(
                 request.user.is_superuser
-                or request.method
-                in self.roles_permissions.get(request.user.role)
+                or request.user.is_staff
+                or request.method in self.roles_permissions[request.user.role]
             )
-        return True
+        else:
+            return bool(request.method in self.roles_permissions["anon"])
+
+    def has_object_permission(self, request, view, obj):
+        if request.user and request.user.is_authenticated:
+            return bool(
+                request.user.is_superuser
+                or request.user.is_staff
+                or request.method in self.roles_permissions[request.user.role]
+            )
+        else:
+            return bool(request.method in self.roles_permissions["anon"])

@@ -106,9 +106,8 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend"
     ],
-    'DEFAULT_PAGINATION_CLASS':
-        'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(days=5)}
@@ -123,30 +122,36 @@ ROLES_PERMISSIONS = {
         "admin": ("GET", "POST", "PATCH", "DELETE"),
         "user": (None,),
         "moderator": (None,),
+        "anon": (None,),
     },
     "Reviews": {
-        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "admin": ("GET", "POST", "PATCH", "DELETE", "PUT"),
         "user": ("GET", "POST"),
-        "moderator": ("GET", "PATCH", "DELETE", "POST"),
+        "moderator": ("GET", "PATCH", "DELETE", "POST", "PUT"),
+        "anon": ("GET",),
     },
     "Comments": {
-        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "admin": ("GET", "PATCH", "DELETE", "POST", "PUT"),
         "user": ("GET", "POST"),
-        "moderator": ("GET", "PATCH", "DELETE", "POST"),
+        "moderator": ("GET", "PATCH", "DELETE", "POST", "PUT"),
+        "anon": ("GET",),
     },
     "Categories": {
-        "admin": ("GET", "POST", "DELETE"),
+        "admin": ("GET", "POST", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET",),
+        "anon": ("GET",),
     },
     "Genres": {
-        "admin": ("GET", "POST", "DELETE"),
+        "admin": ("GET", "POST", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET"),
+        "anon": ("GET",),
     },
     "Titles": {
-        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "admin": ("GET", "POST", "PATCH", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET",),
+        "anon": ("GET",),
     },
 }
