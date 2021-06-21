@@ -60,52 +60,33 @@ class UserModelViewSet(viewsets.ModelViewSet):
 
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
-    # lookup_field = "id"
     serializer_class = TitleSerializer
-    # permission_classes = [
-    #     partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
-    #     IsAuthenticatedOrReadOnly,
-    # ]
+    permission_classes = [
+        partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
+        IsAuthenticatedOrReadOnly,
+    ]
     pagination_class = StandardResultsSetPagination
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
-    def get_queryset(self):
-        category_id = self.request.query_params.get('category', None)
-        if category_id is not None:
-            return self.queryset.filter(category=category_id)
-
-
     def perform_create(self, serializer):
-        slugs = serializer
-        # slugs = self.request.data['genre']
-        slug_1 = self.request.data['category']
+        slugs_genre = self.request.POST.getlist('genre')
+        slug_category = self.request.data['category']
         category = get_object_or_404(
             Category,
-            slug=slug_1
+            slug=slug_category
         )
-        
         title = serializer.save(category_id=category.id)
-        slugs = [x.strip() for x in slugs.split(',')]
-        for slug in slugs:
+        for slug in slugs_genre:
             genre = get_object_or_404(Genre, slug=slug)
             title.genre.add(genre)
-        
-        # genre = Genre.objects.none()
-        # for slug in slugs:
-        #     genre_a = Genre.objects.filter(slug=slug)
-        #     genre = genre.union(genre_a)
-        # serializer.save(
-        #     genre=genre,
-        #     category_id=category.id,
-        # )
 
     def perform_update(self, serializer):
         if 'genre' in self.request.data:
-            a = self.request.data['genre']
-            c = [x.strip() for x in a.split(',')]
+            slug_str = self.request.data['genre']
+            slugs = [x.strip() for x in slug_str.split(',')]
             genre = Genre.objects.none()
-            for i in c:
+            for i in slugs:
                 genre_a = Genre.objects.filter(slug=i)
                 genre = genre.union(genre_a)
             genre_title = self.get_object().genre.all()

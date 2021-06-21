@@ -78,7 +78,6 @@ class TitleSerializer(serializers.ModelSerializer):
             "genre",
             "category",
         )
-        # depth = 1
         model = Title
         read_only_fields = ('rating',)
 
