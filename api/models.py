@@ -15,7 +15,7 @@ class User(AbstractUser):
 
 
 class Title(models.Model):
-    'Название произведения.'
+    """Название произведения."""
     name = models.TextField(
         'Название произведения',
         max_length=200,
@@ -57,7 +57,7 @@ class Title(models.Model):
 
 
 class Category(models.Model):
-    'Тип произведения.'
+    """Тип произведения."""
     name = models.CharField(
         'Категория произведения',
         max_length=200,
@@ -77,7 +77,7 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    'Название жанра.'
+    """Название жанра."""
     name = models.TextField(
         'Название жанра',
         max_length=200,
@@ -96,7 +96,7 @@ class Genre(models.Model):
 
 
 class Review(models.Model):
-    'Отзыв с оценкой (рейтингом).'
+    """Отзыв с оценкой (рейтингом)."""
     text = models.TextField()
     author = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name='Author'
@@ -115,7 +115,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    'Комментарий к отзыву.'
+    """Комментарий к отзыву."""
     text = models.TextField()
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
     author = models.ForeignKey(
