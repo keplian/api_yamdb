@@ -3,7 +3,7 @@ from rest_framework.viewsets import GenericViewSet
 
 
 class CreateListDestroyModelMixinViewSet(mixins.CreateModelMixin,
-                                  mixins.ListModelMixin,
-                                  mixins.DestroyModelMixin,
-                                  GenericViewSet):
+                                         mixins.ListModelMixin,
+                                         mixins.DestroyModelMixin,
+                                         GenericViewSet):
     pass
