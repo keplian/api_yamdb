@@ -1,6 +1,7 @@
 from functools import partial
 
 from django.core.mail import send_mail
+from django.http.request import QueryDict
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from django_filters.rest_framework import DjangoFilterBackend
@@ -19,6 +20,7 @@ from .permissions import IsAuthorOrReadOnly, PermissonForRole
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer, TitleSerializer,
                           UserSerializer)
+from api import serializers
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -51,15 +53,15 @@ class UserModelViewSet(viewsets.ModelViewSet):
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = [
-        partial(PermissonForRole, ROLES_PERMISSIONS.get('Categories')),
-        IsAuthenticatedOrReadOnly,
-    ]
+    # permission_classes = [
+    #     partial(PermissonForRole, ROLES_PERMISSIONS.get('Categories')),
+    #     IsAuthenticatedOrReadOnly,
+    # ]
     filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
     def perform_create(self, serializer):
-        slugs_genre = self.request.POST.getlist('genre')
+        slugs_genre = self.request.data.getlist('genre')
         slug_category = self.request.data['category']
         category = get_object_or_404(
             Category,
@@ -146,6 +148,7 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
         IsAuthorOrReadOnly,
         permissions.IsAuthenticatedOrReadOnly,
     ]
+    lookup_url_kwarg = 'review_id'
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs['title_id'])
@@ -165,6 +168,11 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Review.objects.filter(title_id=self.kwargs['title_id'])
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.queryset.get(id=self.kwargs.get('review_id'))
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentModelViewSet(viewsets.ModelViewSet):
