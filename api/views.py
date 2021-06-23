@@ -1,7 +1,9 @@
 from functools import partial
 
-from django.core.mail import send_mail
 from django.http.request import QueryDict
+
+from api_yamdb.settings import DEFAULT_FROM_EMAIL, ROLES_PERMISSIONS
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from rest_framework import filters, permissions, status, viewsets
@@ -10,8 +12,6 @@ from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from api_yamdb.settings import ROLES_PERMISSIONS, DEFAULT_FROM_EMAIL
-
 from .filters import TitleFilter
 from .mixin import CreateListDestroyModelMixinViewSet
 from .models import Category, Comment, Genre, Review, Title, User
@@ -19,7 +19,6 @@ from .permissions import IsAuthorOrReadOnly, PermissonForRole
 from .serializers import (CategorySerializer, CommentSerializer,
                           GenreSerializer, ReviewSerializer, TitleSerializer,
                           UserSerializer)
-from api import serializers
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -60,9 +59,12 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
     def perform_create(self, serializer):
-        slugs_genre = self.request.POST.getlist("genre")
-        slug_category = self.request.data["category"]
-        category = get_object_or_404(Category, slug=slug_category)
+        slugs_genre = self.request.POST.getlist('genre')
+        slug_category = self.request.data['category']
+        category = get_object_or_404(
+            Category,
+            slug=slug_category
+        )
         title = serializer.save(category_id=category.id)
         for slug in slugs_genre:
             genre = get_object_or_404(Genre, slug=slug)

@@ -1,3 +1,5 @@
+import datetime
+
 from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -90,6 +92,12 @@ class TitleSerializer(serializers.ModelSerializer):
         else:
             rating = None
         return rating
+
+    def validate_year(self, value):
+        now_year = datetime.datetime.now().year
+        if value < 0 or value > now_year:
+            raise serializers.ValidationError(f"Не верный год [ 0 .. {now_year} ]")
+        return value
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):

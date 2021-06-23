@@ -9,7 +9,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = "p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs"
+# os.environ['SECRET_KEY']
 
 DEFAULT_FROM_EMAIL = "admin@example.com"
 

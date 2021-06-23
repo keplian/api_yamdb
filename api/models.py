@@ -29,12 +29,14 @@ class Title(models.Model):
     name = models.TextField(
         "Название произведения",
         max_length=200,
+        db_index=True,
         help_text="Введите название произведения",
     )
     year = models.PositiveSmallIntegerField(
         "Год выпуска",
         null=True,
         blank=True,
+        db_index=True,
         help_text="Год выпуска",
     )
     description = models.TextField(
@@ -73,6 +75,7 @@ class Category(models.Model):
         "Категория произведения",
         max_length=200,
         unique=True,
+        db_index=True,
         help_text="Введите категорию произведения.",
     )
     slug = models.SlugField("URL", unique=True)
@@ -93,6 +96,7 @@ class Genre(models.Model):
         "Название жанра",
         max_length=200,
         unique=True,
+        db_index=True,
         help_text="Введите название жанра",
     )
     slug = models.SlugField("URL", unique=True)
