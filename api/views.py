@@ -30,9 +30,9 @@ class UserModelViewSet(viewsets.ModelViewSet):
     lookup_field = "username"
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [
+    permission_classes = (
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Users")),
-    ]
+    )
 
     @action(
         methods=["PATCH", "GET"],
@@ -56,9 +56,9 @@ class UserModelViewSet(viewsets.ModelViewSet):
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = [
+    permission_classes = (
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Titles")),
-    ]
+    )
     filterset_class = TitleFilter
 
     def perform_create(self, serializer):
@@ -98,13 +98,11 @@ class TitleModelViewSet(viewsets.ModelViewSet):
 class CategoryModelViewSet(CreateListDestroyModelMixinViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [
+    permission_classes = (
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
-    ]
-    filter_backends = [filters.SearchFilter]
-    search_fields = [
-        "name",
-    ]
+    )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ("name",)
     lookup_field = "slug"
 
     def perform_create(self, serializer):
@@ -120,14 +118,12 @@ class CategoryModelViewSet(CreateListDestroyModelMixinViewSet):
 class GenreModelViewSet(CreateListDestroyModelMixinViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [
+    permission_classes = (
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Genres")),
-    ]
-    filter_backends = [filters.SearchFilter]
+    )
+    filter_backends = (filters.SearchFilter,)
 
-    search_fields = [
-        "name",
-    ]
+    search_fields = ("name",)
     lookup_field = "slug"
 
     def perform_create(self, serializer):
@@ -142,10 +138,10 @@ class GenreModelViewSet(CreateListDestroyModelMixinViewSet):
 
 class ReviewModelViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [
+    permission_classes = (
         (IsAuthenticatedOrReadOnly & IsAuthorOrReadOnly)
-        | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews"))
-    ]
+        | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews")),
+    )
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs["title_id"])
@@ -169,10 +165,10 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
 
 class CommentModelViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [
+    permission_classes = (
         (IsAuthenticatedOrReadOnly & IsAuthorOrReadOnly)
-        | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews"))
-    ]
+        | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews")),
+    )
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, pk=self.kwargs["review_id"])
@@ -195,8 +191,9 @@ def email_auth(request):
         subject="Код для генерации токена аутентификации YAMDB",
         message=str(confirmation_code),
         from_email=DEFAULT_FROM_EMAIL,
-        recipient_list=[request.data["email"]],
+        recipient_list=(request.data["email"],),
     )
     return Response(
-        data="Письмо с кодом отправлено", status=status.HTTP_201_CREATED
+        data="Письмо с кодом для аутентификации",
+        status=status.HTTP_201_CREATED,
     )
