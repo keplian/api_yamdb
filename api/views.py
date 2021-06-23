@@ -1,9 +1,8 @@
 from functools import partial
 
-from django.http.request import QueryDict
-
 from api_yamdb.settings import DEFAULT_FROM_EMAIL, ROLES_PERMISSIONS
 from django.core.mail import send_mail
+from django.http.request import QueryDict
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
 from rest_framework import filters, permissions, status, viewsets
@@ -16,9 +15,14 @@ from .filters import TitleFilter
 from .mixin import CreateListDestroyModelMixinViewSet
 from .models import Category, Comment, Genre, Review, Title, User
 from .permissions import IsAuthorOrReadOnly, PermissonForRole
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleSerializer,
-                          UserSerializer)
+from .serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    UserSerializer,
+)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -59,12 +63,9 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
     def perform_create(self, serializer):
-        slugs_genre = self.request.POST.getlist('genre')
-        slug_category = self.request.data['category']
-        category = get_object_or_404(
-            Category,
-            slug=slug_category
-        )
+        slugs_genre = self.request.POST.getlist("genre")
+        slug_category = self.request.data["category"]
+        category = get_object_or_404(Category, slug=slug_category)
         title = serializer.save(category_id=category.id)
         for slug in slugs_genre:
             genre = get_object_or_404(Genre, slug=slug)
@@ -146,7 +147,7 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
         (IsAuthenticatedOrReadOnly & IsAuthorOrReadOnly)
         | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews"))
     ]
-    lookup_url_kwarg = 'review_id'
+    lookup_url_kwarg = "review_id"
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs["title_id"])
@@ -168,7 +169,7 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
         return Review.objects.filter(title_id=self.kwargs["title_id"])
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.queryset.get(id=self.kwargs.get('review_id'))
+        instance = self.get_queryset().get(id=self.kwargs.get("review_id"))
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
