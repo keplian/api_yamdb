@@ -79,7 +79,6 @@ class TitleSerializer(serializers.ModelSerializer):
             "category",
         )
         model = Title
-        read_only_fields = ("rating",)
 
     def get_rating(self, obj):
         if Review.objects.filter(title_id=obj.id):

@@ -61,7 +61,7 @@ class Title(models.Model):
         return self.name
 
     class Meta:
-        ordering = ("year",)
+        ordering = ("name",)
         verbose_name = "Произведение"
         verbose_name_plural = "Произведения"
 
