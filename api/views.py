@@ -1,28 +1,23 @@
 from functools import partial
 
-from api_yamdb.settings import ROLES_PERMISSIONS
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
+from api_yamdb.settings import ROLES_PERMISSIONS, DEFAULT_FROM_EMAIL
+
 from .filters import TitleFilter
 from .mixin import CreateListDestroyModelMixinViewSet
 from .models import Category, Comment, Genre, Review, Title, User
 from .permissions import IsAuthorOrReadOnly, PermissonForRole
-from .serializers import (
-    CategorySerializer,
-    CommentSerializer,
-    GenreSerializer,
-    ReviewSerializer,
-    TitleSerializer,
-    UserSerializer,
-)
+from .serializers import (CategorySerializer, CommentSerializer,
+                          GenreSerializer, ReviewSerializer, TitleSerializer,
+                          UserSerializer)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
@@ -60,7 +55,6 @@ class TitleModelViewSet(viewsets.ModelViewSet):
     permission_classes = [
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Titles")),
     ]
-    filter_backends = [DjangoFilterBackend]
     filterset_class = TitleFilter
 
     def perform_create(self, serializer):
@@ -143,7 +137,6 @@ class GenreModelViewSet(CreateListDestroyModelMixinViewSet):
 
 
 class ReviewModelViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [
         (IsAuthenticatedOrReadOnly & IsAuthorOrReadOnly)
@@ -171,7 +164,6 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
 
 
 class CommentModelViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [
         (IsAuthenticatedOrReadOnly & IsAuthorOrReadOnly)
@@ -198,7 +190,7 @@ def email_auth(request):
     send_mail(
         subject="Confirmation code for token from YAMDB",
         message=str(confirmation_code),
-        from_email=["admin@gmail.com"],
+        from_email=DEFAULT_FROM_EMAIL,
         recipient_list=[request.data["email"]],
     )
     return Response(data="Email was sent", status=status.HTTP_201_CREATED)

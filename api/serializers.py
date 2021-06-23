@@ -44,16 +44,12 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date")
         model = Review
 
-    def validate(self, data):
-        title_id = self.context["view"].kwargs["title_id"]
-        if (
-            not title_id.isnumeric()
-            or int(title_id) < 1
-            or (data["score"] > 10 or data["score"] < 1)
-        ):
-            raise serializers.ValidationError("Bad request")
-
-        return data
+    def validate_score(self, value):
+        if not int(value) or (
+                value > 10 or value < 1):
+            raise serializers.ValidationError(
+                "Не найден объект оценки [ 1 .. 10 ]")
+        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):

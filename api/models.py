@@ -76,7 +76,6 @@ class Category(models.Model):
         help_text="Введите категорию произведения.",
     )
     slug = models.SlugField("URL", unique=True)
-    slug = models.SlugField("URL", unique=True)
 
     def __str__(self) -> str:
         return self.name
@@ -117,7 +116,7 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name="Title", blank=True
     )
-    score = models.SmallIntegerField(10)
+    score = models.SmallIntegerField("Оценка (от 1 до 10)")
     pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
     class Meta:
