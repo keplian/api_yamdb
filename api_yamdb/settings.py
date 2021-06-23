@@ -1,14 +1,17 @@
 import os
 from datetime import timedelta
 
+import dotenv
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
+dotenv_file = os.path.join(BASE_DIR, ".env")
+if os.path.isfile(dotenv_file):
+    dotenv.load_dotenv(dotenv_file)
+SECRET_KEY = os.environ['SECRET_KEY']
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs"
+DEFAULT_FROM_EMAIL = "admin@example.com"
 
 DEBUG = True
 
@@ -106,9 +109,8 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend"
     ],
-    'DEFAULT_PAGINATION_CLASS':
-        'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
 }
 
 SIMPLE_JWT = {"ACCESS_TOKEN_LIFETIME": timedelta(days=5)}
@@ -123,30 +125,36 @@ ROLES_PERMISSIONS = {
         "admin": ("GET", "POST", "PATCH", "DELETE"),
         "user": (None,),
         "moderator": (None,),
+        "anon": (None,),
     },
     "Reviews": {
-        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "admin": ("GET", "POST", "PATCH", "DELETE", "PUT"),
         "user": ("GET", "POST"),
-        "moderator": ("GET", "PATCH", "DELETE", "POST"),
+        "moderator": ("GET", "PATCH", "DELETE", "POST", "PUT"),
+        "anon": ("GET",),
     },
     "Comments": {
-        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "admin": ("GET", "PATCH", "DELETE", "POST", "PUT"),
         "user": ("GET", "POST"),
-        "moderator": ("GET", "PATCH", "DELETE", "POST"),
+        "moderator": ("GET", "PATCH", "DELETE", "POST", "PUT"),
+        "anon": ("GET",),
     },
     "Categories": {
-        "admin": ("GET", "POST", "DELETE"),
+        "admin": ("GET", "POST", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET",),
+        "anon": ("GET",),
     },
     "Genres": {
-        "admin": ("GET", "POST", "DELETE"),
+        "admin": ("GET", "POST", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET"),
+        "anon": ("GET",),
     },
     "Titles": {
-        "admin": ("GET", "POST", "PATCH", "DELETE"),
+        "admin": ("GET", "POST", "PATCH", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET",),
+        "anon": ("GET",),
     },
 }
