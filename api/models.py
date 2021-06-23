@@ -7,17 +7,34 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
     """User model with some custom fields."""
 
-    ROLES = [
-        ("admin", "Admin"),
-        ("moderator", "Modererator"),
-        ("user", "User"),
-    ]
+    class Roles(models.TextChoices):
+        ADMIN = "admin", _("Administrator")
+        MODER = "moderator", _("Modererator")
+        USER = "user", _("User")
+
     email = models.EmailField(_("email address"), unique=True)
-    role = models.CharField(_("role"), choices=ROLES, max_length=30)
+    role = models.CharField(
+        _("role"), choices=Roles.choices, default=Roles.USER, max_length=30
+    )
     bio = models.TextField(_("biography"), blank=True)
     confirmation_code = models.CharField(
         _("confirmation code"), max_length=100, blank=True
     )
+
+    @property
+    def is_admin(self):
+        if self.role == "admin" or self.is_superuser:
+            return True
+
+    @property
+    def is_moder(self):
+        if self.role == "moderator" or self.is_staff:
+            return True
+
+    @property
+    def is_user(self):
+        if self.role == "user":
+            return True
 
     class Meta:
         ordering = ("username",)
@@ -61,7 +78,7 @@ class Title(models.Model):
         return self.name
 
     class Meta:
-        ordering = ("name",)
+        ordering = ("year",)
         verbose_name = "Произведение"
         verbose_name_plural = "Произведения"
 
@@ -75,6 +92,7 @@ class Category(models.Model):
         unique=True,
         help_text="Введите категорию произведения.",
     )
+    slug = models.SlugField("URL", unique=True)
     slug = models.SlugField("URL", unique=True)
 
     def __str__(self) -> str:
@@ -116,7 +134,7 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name="Title", blank=True
     )
-    score = models.SmallIntegerField("Оценка (от 1 до 10)")
+    score = models.SmallIntegerField(10)
     pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
     class Meta:

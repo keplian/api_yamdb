@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
-SECRET_KEY = os.environ['SECRET_KEY']
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 DEFAULT_FROM_EMAIL = "admin@example.com"
 
@@ -122,37 +122,31 @@ AUTH_USER_MODEL = "api.User"
 
 ROLES_PERMISSIONS = {
     "Users": {
-        "admin": ("GET", "POST", "PATCH", "DELETE"),
         "user": (None,),
         "moderator": (None,),
         "anon": (None,),
     },
     "Reviews": {
-        "admin": ("GET", "POST", "PATCH", "DELETE", "PUT"),
         "user": ("GET", "POST"),
         "moderator": ("GET", "PATCH", "DELETE", "POST", "PUT"),
         "anon": ("GET",),
     },
     "Comments": {
-        "admin": ("GET", "PATCH", "DELETE", "POST", "PUT"),
         "user": ("GET", "POST"),
         "moderator": ("GET", "PATCH", "DELETE", "POST", "PUT"),
         "anon": ("GET",),
     },
     "Categories": {
-        "admin": ("GET", "POST", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET",),
         "anon": ("GET",),
     },
     "Genres": {
-        "admin": ("GET", "POST", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET"),
         "anon": ("GET",),
     },
     "Titles": {
-        "admin": ("GET", "POST", "PATCH", "DELETE", "PUT"),
         "user": ("GET",),
         "moderator": ("GET",),
         "anon": ("GET",),

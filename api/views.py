@@ -1,5 +1,6 @@
 from functools import partial
 
+from api_yamdb.settings import DEFAULT_FROM_EMAIL, ROLES_PERMISSIONS
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
@@ -9,19 +10,22 @@ from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from api_yamdb.settings import ROLES_PERMISSIONS, DEFAULT_FROM_EMAIL
-
 from .filters import TitleFilter
 from .mixin import CreateListDestroyModelMixinViewSet
 from .models import Category, Comment, Genre, Review, Title, User
 from .permissions import IsAuthorOrReadOnly, PermissonForRole
-from .serializers import (CategorySerializer, CommentSerializer,
-                          GenreSerializer, ReviewSerializer, TitleSerializer,
-                          UserSerializer)
+from .serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleSerializer,
+    UserSerializer,
+)
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
-    """Custim User model with custom action."""
+    """Custщm User model with custom action."""
 
     lookup_field = "username"
     queryset = User.objects.all()
@@ -147,14 +151,14 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
         title = get_object_or_404(Title, pk=self.kwargs["title_id"])
         user = User.objects.get(username=self.request.user)
         if user is None:
-            raise ParseError("Bad Request")
+            raise ParseError("Неверный запрос!")
 
         review = Review.objects.filter(
             title=self.kwargs["title_id"], author=self.request.user.id
         )
 
         if review.exists():
-            raise ParseError(detail="Your review already exists.")
+            raise ParseError(detail="Ваш отзыв уже существует!")
 
         serializer.save(author=user, title=title)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -188,9 +192,11 @@ def email_auth(request):
     user.confirmation_code = confirmation_code
     user.save()
     send_mail(
-        subject="Confirmation code for token from YAMDB",
+        subject="Код для генерации токена аутентификации YAMDB",
         message=str(confirmation_code),
         from_email=DEFAULT_FROM_EMAIL,
         recipient_list=[request.data["email"]],
     )
-    return Response(data="Email was sent", status=status.HTTP_201_CREATED)
+    return Response(
+        data="Письмо с кодом отправлено", status=status.HTTP_201_CREATED
+    )
