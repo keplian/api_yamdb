@@ -89,7 +89,9 @@ class TitleSerializer(serializers.ModelSerializer):
     def validate_year(self, value):
         now_year = datetime.datetime.now().year
         if value < 0 or value > now_year:
-            raise serializers.ValidationError(f"Не верный год [ 0 .. {now_year} ]")
+            raise serializers.ValidationError(
+                f"Не верный год [ 0 .. {now_year} ]"
+            )
         return value
 
 
