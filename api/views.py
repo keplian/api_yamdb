@@ -1,10 +1,10 @@
 from functools import partial
 
-from api_yamdb.settings import ROLES_PERMISSIONS
+from api_yamdb.settings import DEFAULT_FROM_EMAIL, ROLES_PERMISSIONS
 from django.core.mail import send_mail
+from django.http.request import QueryDict
 from django.shortcuts import get_object_or_404
 from django.utils.crypto import get_random_string
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.exceptions import ParseError
@@ -26,14 +26,14 @@ from .serializers import (
 
 
 class UserModelViewSet(viewsets.ModelViewSet):
-    """Custim User model with custom action."""
+    """Custщm User model with custom action."""
 
     lookup_field = "username"
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [
+    permission_classes = (
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Users")),
-    ]
+    )
 
     @action(
         methods=["PATCH", "GET"],
@@ -57,10 +57,9 @@ class UserModelViewSet(viewsets.ModelViewSet):
 class TitleModelViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = [
+    permission_classes = (
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Titles")),
-    ]
-    filter_backends = [DjangoFilterBackend]
+    )
     filterset_class = TitleFilter
 
     def perform_create(self, serializer):
@@ -100,13 +99,11 @@ class TitleModelViewSet(viewsets.ModelViewSet):
 class CategoryModelViewSet(CreateListDestroyModelMixinViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [
+    permission_classes = (
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Categories")),
-    ]
-    filter_backends = [filters.SearchFilter]
-    search_fields = [
-        "name",
-    ]
+    )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ("name",)
     lookup_field = "slug"
 
     def perform_create(self, serializer):
@@ -122,14 +119,12 @@ class CategoryModelViewSet(CreateListDestroyModelMixinViewSet):
 class GenreModelViewSet(CreateListDestroyModelMixinViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [
+    permission_classes = (
         partial(PermissonForRole, ROLES_PERMISSIONS.get("Genres")),
-    ]
-    filter_backends = [filters.SearchFilter]
+    )
+    filter_backends = (filters.SearchFilter,)
 
-    search_fields = [
-        "name",
-    ]
+    search_fields = ("name",)
     lookup_field = "slug"
 
     def perform_create(self, serializer):
@@ -143,25 +138,24 @@ class GenreModelViewSet(CreateListDestroyModelMixinViewSet):
 
 
 class ReviewModelViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [
+    permission_classes = (
         (IsAuthenticatedOrReadOnly & IsAuthorOrReadOnly)
-        | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews"))
-    ]
+        | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews")),
+    )
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, pk=self.kwargs["title_id"])
         user = User.objects.get(username=self.request.user)
         if user is None:
-            raise ParseError("Bad Request")
+            raise ParseError("Неверный запрос!")
 
         review = Review.objects.filter(
             title=self.kwargs["title_id"], author=self.request.user.id
         )
 
         if review.exists():
-            raise ParseError(detail="Your review already exists.")
+            raise ParseError(detail="Ваш отзыв уже существует!")
 
         serializer.save(author=user, title=title)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -171,12 +165,11 @@ class ReviewModelViewSet(viewsets.ModelViewSet):
 
 
 class CommentModelViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [
+    permission_classes = (
         (IsAuthenticatedOrReadOnly & IsAuthorOrReadOnly)
-        | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews"))
-    ]
+        | partial(PermissonForRole, ROLES_PERMISSIONS.get("Reviews")),
+    )
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, pk=self.kwargs["review_id"])
@@ -196,9 +189,12 @@ def email_auth(request):
     user.confirmation_code = confirmation_code
     user.save()
     send_mail(
-        subject="Confirmation code for token from YAMDB",
+        subject="Код для генерации токена аутентификации YAMDB",
         message=str(confirmation_code),
-        from_email=["admin@gmail.com"],
-        recipient_list=[request.data["email"]],
+        from_email=DEFAULT_FROM_EMAIL,
+        recipient_list=(request.data["email"],),
     )
-    return Response(data="Email was sent", status=status.HTTP_201_CREATED)
+    return Response(
+        data="Письмо с кодом для аутентификации",
+        status=status.HTTP_201_CREATED,
+    )

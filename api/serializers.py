@@ -1,3 +1,5 @@
+import datetime
+
 from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -44,17 +46,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date")
         model = Review
 
-    def validate(self, data):
-        title_id = self.context["view"].kwargs["title_id"]
-        if (
-            not title_id.isnumeric()
-            or int(title_id) < 1
-            or (data["score"] > 10 or data["score"] < 1)
-        ):
-            raise serializers.ValidationError("Bad request")
-
-        return data
-
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
@@ -83,7 +74,6 @@ class TitleSerializer(serializers.ModelSerializer):
             "category",
         )
         model = Title
-        read_only_fields = ("rating",)
 
     def get_rating(self, obj):
         if Review.objects.filter(title_id=obj.id):
@@ -95,6 +85,12 @@ class TitleSerializer(serializers.ModelSerializer):
         else:
             rating = None
         return rating
+
+    def validate_year(self, value):
+        now_year = datetime.datetime.now().year
+        if value < 0 or value > now_year:
+            raise serializers.ValidationError(f"Не верный год [ 0 .. {now_year} ]")
+        return value
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):

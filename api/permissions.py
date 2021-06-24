@@ -26,18 +26,16 @@ class PermissonForRole(BasePermission):
 
     def has_permission(self, request, view):
         if request.user.is_authenticated:
-            return bool(
-                request.user.is_superuser
-                or request.user.is_staff
+            return (
+                request.user.is_admin
                 or request.method in self.roles_permissions[request.user.role]
             )
-        return bool(request.method in self.roles_permissions["anon"])
+        return request.method in self.roles_permissions["anon"]
 
     def has_object_permission(self, request, view, obj):
         if request.user.is_authenticated:
-            return bool(
-                request.user.is_superuser
-                or request.user.is_staff
+            return (
+                request.user.is_admin
                 or request.method in self.roles_permissions[request.user.role]
             )
-        return bool(request.method in self.roles_permissions["anon"])
+        return request.method in self.roles_permissions["anon"]

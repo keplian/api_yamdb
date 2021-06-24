@@ -1,23 +1,48 @@
+import datetime
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+
 from django.utils.translation import gettext_lazy as _
+
+
+def max_value_current_year(value):
+    return MaxValueValidator(
+        datetime.date.today().year, "Год не может быть больше текущего")(
+        value)
 
 
 class User(AbstractUser):
     """User model with some custom fields."""
+    class Roles(models.TextChoices):
+        ADMIN = "admin", _("Administrator")
+        MODER = "moderator", _("Modererator")
+        USER = "user", _("User")
 
-    ROLES = [
-        ("admin", "Admin"),
-        ("moderator", "Modererator"),
-        ("user", "User"),
-    ]
     email = models.EmailField(_("email address"), unique=True)
-    role = models.CharField(_("role"), choices=ROLES, max_length=30)
+    role = models.CharField(
+        _("role"), choices=Roles.choices, default=Roles.USER, max_length=30
+    )
     bio = models.TextField(_("biography"), blank=True)
     confirmation_code = models.CharField(
         _("confirmation code"), max_length=100, blank=True
     )
+
+    @property
+    def is_admin(self):
+        if self.role == "admin" or self.is_superuser:
+            return True
+
+    @property
+    def is_moder(self):
+        if self.role == "moderator" or self.is_staff:
+            return True
+
+    @property
+    def is_user(self):
+        if self.role == "user":
+            return True
 
     class Meta:
         ordering = ("username",)
@@ -25,17 +50,19 @@ class User(AbstractUser):
 
 class Title(models.Model):
     """Название произведения."""
-
     name = models.TextField(
         "Название произведения",
         max_length=200,
+        db_index=True,
         help_text="Введите название произведения",
     )
-    year = models.PositiveSmallIntegerField(
+    year = models.PositiveIntegerField(
         "Год выпуска",
         null=True,
         blank=True,
+        db_index=True,
         help_text="Год выпуска",
+        validators=[MinValueValidator(1800), max_value_current_year]
     )
     description = models.TextField(
         "Описание",
@@ -68,14 +95,13 @@ class Title(models.Model):
 
 class Category(models.Model):
     """Тип произведения."""
-
     name = models.CharField(
         "Категория произведения",
         max_length=200,
         unique=True,
+        db_index=True,
         help_text="Введите категорию произведения.",
     )
-    slug = models.SlugField("URL", unique=True)
     slug = models.SlugField("URL", unique=True)
 
     def __str__(self) -> str:
@@ -89,11 +115,11 @@ class Category(models.Model):
 
 class Genre(models.Model):
     """Название жанра."""
-
     name = models.TextField(
         "Название жанра",
         max_length=200,
         unique=True,
+        db_index=True,
         help_text="Введите название жанра",
     )
     slug = models.SlugField("URL", unique=True)
@@ -109,7 +135,6 @@ class Genre(models.Model):
 
 class Review(models.Model):
     """Отзыв с оценкой (рейтингом)."""
-
     text = models.TextField()
     author = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="Author"
@@ -117,7 +142,8 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name="Title", blank=True
     )
-    score = models.SmallIntegerField(10)
+    score = models.SmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(10)])
     pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
 
     class Meta:
@@ -128,7 +154,6 @@ class Review(models.Model):
 
 class Comment(models.Model):
     """Комментарий к отзыву."""
-
     text = models.TextField()
     pub_date = models.DateTimeField("Дата публикации", auto_now_add=True)
     author = models.ForeignKey(
