@@ -44,13 +44,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ("id", "text", "author", "score", "pub_date")
         model = Review
 
-    def validate_score(self, value):
-        if not int(value) or (
-                value > 10 or value < 1):
-            raise serializers.ValidationError(
-                "Не найден объект оценки [ 1 .. 10 ]")
-        return value
-
 
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField()
