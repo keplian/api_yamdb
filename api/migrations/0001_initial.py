@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Произведение',
                 'verbose_name_plural': 'Произведения',
-                'ordering': ('year',),
+                'ordering': ('name',),
             },
         ),
         migrations.CreateModel(
