@@ -5,7 +5,7 @@ import dotenv
 
 dotenv.load_dotenv()
 
-SECRET_KEY = os.getenv["SECRET_KEY", default="foobar"]
+SECRET_KEY = os.getenv["SECRET_KEY", "DEFAULT"]
 
 
 DEFAULT_FROM_EMAIL = "admin@example.com"
